@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="../../static/css/auth.css" th:href="@{css/auth.css}">
+</head>
+<body>
+<form th:action="@{/login}" method="post">
+    <div class="border sizing-box container justify-content-md-center">
+        <div class="row mb-3">
+            Введите логин и пароль
+        </div>
+        <div class="row warning-mes">
+            <div  th:if="${param.error}">
+                Неверно введен логин или пароль
+            </div>
+            <div th:if="${param.logout}">
+                Вы вышли из системы
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="username">Логин </label>
+            <input class="form-control" type="text" name="username" id="username"/>
+        </div>
+        <div class="row mb-3">
+            <label for="password">Пароль</label>
+            <input class="form-control" type="password" name="password" id="password"/>
+        </div>
+        <div class="row mb-3 justify-content-md-center">
+            <input class="btn btn-primary" type="submit" value="Войти"/>
+        </div>
+        <div class="row mb-3 justify-content-md-center">
+            <input class="btn btn-outline-success my-2 my-sm-0" onclick="window.location='/registration';" value="Зарегистрироваться"/>
+        </div>
+
+    </div>
+</form>
+</body>
+</html>

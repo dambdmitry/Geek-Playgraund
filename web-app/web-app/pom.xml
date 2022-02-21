@@ -18,6 +18,14 @@
         <start-class>edu.mitin.playground.WebApplication</start-class>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>edu.mitin.playground</groupId>
+            <artifactId>playground-users</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

@@ -1,0 +1,9 @@
+edu\mitin\playground\controllers\HttpErrorController.class
+edu\mitin\playground\controllers\UserController.class
+edu\mitin\playground\controllers\PlayerController.class
+edu\mitin\playground\Application.class
+edu\mitin\playground\controllers\TournamentsController.class
+edu\mitin\playground\controllers\MainController.class
+edu\mitin\playground\config\Config.class
+edu\mitin\playground\controllers\OrganizerController.class
+edu\mitin\playground\controllers\RegistrationController.class

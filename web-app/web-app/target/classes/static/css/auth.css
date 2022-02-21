@@ -1,0 +1,17 @@
+.sizing-box {
+    max-width: 350px;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.warning-mes{
+    color: red;
+}
+
+.info{
+    font-size: large;
+    margin: auto;
+}

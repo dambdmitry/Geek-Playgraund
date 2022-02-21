@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="../../static/css/auth.css" th:href="@{css/auth.css}">
+</head>
+<body>
+    <!--/*@thymesVar id="user" type="edu.mitin.playground.model.User"*/-->
+    <form th:action="@{/registration}" th:object="${user}" method="post">
+        <div class="border sizing-box container justify-content-md-center">
+            <div class="row info justify-content-md-center">
+                Придумайте логин и пароль
+            </div>
+            <div class="row warning-mes">
+                <div th:text="${errorMsg}">
+                </div>
+
+            </div>
+            <div class="form-group row">
+                <label for="username">Логин </label>
+                <input class="form-control" type="text" name="username" id="username" th:field="*{username}"/>
+            </div>
+            <div class="form-group row">
+                <label for="password">Пароль</label>
+                <input class="form-control" type="password" name="password" id="password" th:field="*{password}"/>
+            </div>
+            <div class="form-group row">
+                <label for="passwordConfirm">Подтвердите пароль</label>
+                <input class="form-control" type="password" name="password" id="passwordConfirm" th:field="*{passwordConfirm}"/>
+            </div>
+            <div class="row justify-content-md-center">
+                <input class="btn btn-primary" type="submit" value="Зарегистрироваться"/>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

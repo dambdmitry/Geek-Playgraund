@@ -1,0 +1,9 @@
+edu\mitin\playground\config\ApplicationConfig.class
+edu\mitin\playground\UserService.class
+edu\mitin\playground\config\WebSecurityConfig.class
+edu\mitin\playground\repository\UserRepository.class
+edu\mitin\playground\model\User.class
+edu\mitin\playground\config\MvcConfig.class
+edu\mitin\playground\repository\RoleRepository.class
+edu\mitin\playground\Service.class
+edu\mitin\playground\model\Role.class
