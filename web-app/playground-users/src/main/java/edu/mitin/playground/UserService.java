@@ -9,7 +9,7 @@ import java.util.Optional;
 @Service
 public interface UserService extends UserDetailsService {
 
-    boolean registerUser(String login, String password);
+    boolean registerUser(User user);
 
     User getUserById(Long id);
 

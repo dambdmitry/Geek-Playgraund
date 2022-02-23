@@ -7,35 +7,32 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="../../static/css/auth.css" th:href="@{css/auth.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
 </head>
 <body>
-<form th:action="@{/login}" method="post">
+<form th:action="@{/auth/login}" th:object="${user}" method="post">
     <div class="border sizing-box container justify-content-md-center">
         <div class="row mb-3">
             Введите логин и пароль
         </div>
         <div class="row warning-mes">
-            <div  th:if="${param.error}">
-                Неверно введен логин или пароль
+            <div th:text="${errorMsg}">
             </div>
-            <div th:if="${param.logout}">
-                Вы вышли из системы
-            </div>
+
         </div>
         <div class="row mb-3">
             <label for="username">Логин </label>
-            <input class="form-control" type="text" name="username" id="username"/>
+            <input class="form-control" type="text" name="username" id="username" th:field="*{username}"/>
         </div>
         <div class="row mb-3">
             <label for="password">Пароль</label>
-            <input class="form-control" type="password" name="password" id="password"/>
+            <input class="form-control" type="password" name="password" id="password" th:field="*{password}"/>
         </div>
         <div class="row mb-3 justify-content-md-center">
             <input class="btn btn-primary" type="submit" value="Войти"/>
         </div>
         <div class="row mb-3 justify-content-md-center">
-            <input class="btn btn-outline-success my-2 my-sm-0" onclick="window.location='/registration';" value="Зарегистрироваться"/>
+            <input class="btn btn-outline-success my-2 my-sm-0" onclick="window.location='/auth/registration';" value="Зарегистрироваться"/>
         </div>
 
     </div>

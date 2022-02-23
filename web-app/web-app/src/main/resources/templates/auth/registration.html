@@ -7,11 +7,11 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="../../static/css/auth.css" th:href="@{css/auth.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
 </head>
 <body>
     <!--/*@thymesVar id="user" type="edu.mitin.playground.model.User"*/-->
-    <form th:action="@{/registration}" th:object="${user}" method="post">
+    <form th:action="@{/auth/registration}" th:object="${user}" method="post">
         <div class="border sizing-box container justify-content-md-center">
             <div class="row info justify-content-md-center">
                 Придумайте логин и пароль

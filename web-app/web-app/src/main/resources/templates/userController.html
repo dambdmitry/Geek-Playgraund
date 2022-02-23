@@ -5,6 +5,8 @@
 
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" th:href="@{/css/hiddenByAnonymous.css}">
+<link rel="stylesheet" th:href="@{/css/hiddenByAuthed.css}">
 <head>
     <meta charset="UTF-8">
     <title>Профиль юзера</title>
@@ -30,9 +32,21 @@
         </ul>
 
     </div>
-    <form class="form-inline my-2 my-lg-0" th:action="@{/logout}" method="post">
-        <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Выйти"/>
-    </form>
+    <div class="hiddenByUnAuth">
+        <form class="form-inline my-2 my-lg-0" th:action="@{/auth/logout}" method="post">
+            <input class="btn btn-outline-danger my-2 my-sm-0" type="submit" value="Выйти"/>
+        </form>
+    </div>
+    <div class="hiddenByAuthed">
+        <form style="margin: 3px" class="form-inline my-2 my-lg-0" th:action="@{/auth/registration}" method="get">
+            <input class="btn btn-outline-secondary my-2 my-sm-0" type="submit" value="Зарегистрироваться"/>
+        </form>
+    </div>
+    <div class="hiddenByAuthed">
+        <form style="margin: 3px" class="form-inline my-2 my-lg-0" th:action="@{/auth/login}" method="get">
+            <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Войти"/>
+        </form>
+    </div>
 </nav>
 тут будет личный кабинет пользователя
 </body>

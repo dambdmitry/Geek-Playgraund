@@ -1,11 +1,12 @@
 package edu.mitin.playground.model;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class User implements UserDetails {
@@ -18,8 +19,17 @@ public class User implements UserDetails {
     @Transient
     private String passwordConfirm;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Role> roles;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
     public User(){}
 
@@ -39,9 +49,7 @@ public class User implements UserDetails {
         this.passwordConfirm = passwordConfirm;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
+
 
     public Long getId() {
         return id;
@@ -51,13 +59,14 @@ public class User implements UserDetails {
         return passwordConfirm;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
+        return role.getPermissions()
+                .stream()
+                .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
+                .collect(Collectors.toSet());
     }
 
     @Override

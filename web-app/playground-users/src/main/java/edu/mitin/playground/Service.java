@@ -2,7 +2,6 @@ package edu.mitin.playground;
 
 import edu.mitin.playground.model.Role;
 import edu.mitin.playground.model.User;
-import edu.mitin.playground.repository.RoleRepository;
 import edu.mitin.playground.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +10,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.Collections;
 import java.util.Optional;
 
 @org.springframework.stereotype.Service
@@ -21,22 +19,20 @@ public class Service implements UserService{
 
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
+
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public boolean registerUser(String username, String password) {
-        User userFromDB = userRepository.findByUsername(username);
+    public boolean registerUser(User user) {
+        User userFromDB = userRepository.findByUsername(user.getUsername());
         if (userFromDB != null) {
             return false;
         }
-        User user = new User();
-        user.setPassword(passwordEncoder.encode(password));
-        user.setUsername(username);
-        user.setRoles(Collections.singleton(new Role(1L, "ROLE_USER")));
-        return false;
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(Role.USER);
+        userRepository.save(user);
+        return true;
     }
 
     @Override
@@ -65,7 +61,6 @@ public class Service implements UserService{
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-
         return user;
     }
 }

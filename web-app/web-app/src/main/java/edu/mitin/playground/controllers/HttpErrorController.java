@@ -18,7 +18,7 @@ public class HttpErrorController implements ErrorController {
     @Autowired
     private MessageSource messageSource;
 
-    @RequestMapping("/")
+    @RequestMapping("/error")
     public String handleError(Locale locale, Model model, HttpServletRequest request, Exception ex) {
         var status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 
@@ -48,4 +48,5 @@ public class HttpErrorController implements ErrorController {
 
         return "errors/error";
     }
+
 }
