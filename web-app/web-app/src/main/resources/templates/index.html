@@ -4,29 +4,31 @@
 
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<link rel="stylesheet" th:href="@{/css/hiddenByAnonymous.css}">
-<link rel="stylesheet" th:href="@{/css/hiddenByAuthed.css}">
+<link rel="stylesheet" th:href="@{/css/security/hiddenByAnonymous.css}">
+<link rel="stylesheet" th:href="@{/css/security/hiddenByAuthed.css}">
+<link rel="stylesheet" th:href="@{/css/mainPage.css}">
+<link rel="stylesheet" th:href="@{/css/navbar.css}">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Title</title>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light nav-bg border border-dark">
     <a class="navbar-brand" th:href="@{/}">Главная</a>
 
     <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/tournament}">Турниры</a>
+            <li class="link-nav">
+                <a class="link" th:href="@{/tournament}">Турниры</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/player}">Игрокам</a>
+            <li class="link-nav">
+                <a class="link" th:href="@{/player}">Игрокам</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/organizer}">Организаторам</a>
+            <li class="link-nav">
+                <a class="link" th:href="@{/organizer}">Организаторам</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/user}">Мой профиль</a>
+            <li class="link-nav">
+                <a class="link" th:href="@{/user}">Мой профиль</a>
             </li>
         </ul>
 
@@ -48,6 +50,18 @@
         </form>
     </div>
 </nav>
-  <h1>пока</h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col border border-primary idents tournaments">
+            One of three columns
+        </div>
+        <div class="col-6 border border-primary idents">
+            One of three columns
+        </div>
+        <div class="col border border-primary idents">
+            One of three columns
+        </div>
+    </div>
+</div>
 </body>
 </html>

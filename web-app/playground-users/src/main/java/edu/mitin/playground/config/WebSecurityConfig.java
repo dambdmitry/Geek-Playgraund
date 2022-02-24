@@ -51,9 +51,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                      .antMatchers("/user").hasAuthority(Permission.USER_PROFILE.getPermission())
                     //Доступ разрешен всем пользователей
 
-                    .antMatchers("/css/auth.css").permitAll()
-                    .antMatchers("/css/hiddenByAnonymous.css").hasRole("ANONYMOUS")
-                .antMatchers("/css/hiddenByAuthed.css").authenticated()
+                    .antMatchers("/css/*").permitAll()
+                    .antMatchers("/css/security/hiddenByAnonymous.css").hasRole("ANONYMOUS")
+                .antMatchers("/css/security/hiddenByAuthed.css").authenticated()
                 //Все остальные страницы требуют аутентификации
                 .anyRequest().authenticated()
                 //.antMatchers("/css/authed.css").permitAll()
