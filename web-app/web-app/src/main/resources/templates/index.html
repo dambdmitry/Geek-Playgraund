@@ -52,8 +52,43 @@
 </nav>
 <div class="container-fluid">
     <div class="row">
-        <div class="col border border-primary idents tournaments">
-            One of three columns
+        <div class="col idents tournaments">
+            <h5 align="center">Турниры</h5>
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Название</th>
+                    <th scope="col">Игроков</th>
+<!--                    <th scope="col">че то еще</th>-->
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tour : ${tournaments}" th:onclick="'window.location.href = \'' + @{/tournament/{id}(id=${tour.id})} + '\''" >
+                    <td th:text="${tour.id}"/>
+                    <td th:text="${tour.name}"/>
+                    <td th:text="${tour.playerCount}"/>
+<!--                    <td th:text="${tour.playerCount}"/>-->
+                </tr>
+<!--                <tr th:href="">-->
+<!--                    <th scope="row">1</th>-->
+<!--                    <td>Mark</td>-->
+<!--                    <td>Otto</td>-->
+<!--                    <td>@mdo</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <th scope="row">2</th>-->
+<!--                    <td>Jacob</td>-->
+<!--                    <td>Thornton</td>-->
+<!--                    <td>@fat</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <th scope="row">3</th>-->
+<!--                    <td colspan="2">Larry the Bird</td>-->
+<!--                    <td>@twitter</td>-->
+<!--                </tr>-->
+                </tbody>
+            </table>
         </div>
         <div class="col-6 border border-primary idents">
             One of three columns

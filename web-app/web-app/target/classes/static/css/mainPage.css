@@ -3,6 +3,11 @@
 }
 
 .tournaments{
-    background-color: #FFCC99;
+    border-right: 1px black;
+    background-color: rgba(255, 204, 153, 40%);
+    padding: initial;
 }
 
+table{
+    width: 100%;
+}

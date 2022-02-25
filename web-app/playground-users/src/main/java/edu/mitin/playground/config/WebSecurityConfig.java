@@ -46,6 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/").permitAll()
                     .antMatchers("/errors/**").permitAll()
                     .antMatchers("/tournament").permitAll()
+                    .antMatchers("/tournament/*").permitAll()
                     .antMatchers("/player").permitAll()
                     .antMatchers("/organizer").permitAll()
                      .antMatchers("/user").hasAuthority(Permission.USER_PROFILE.getPermission())
