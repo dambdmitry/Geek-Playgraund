@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" th:href="@{/css/security/hiddenByAnonymous.css}">
+<link rel="stylesheet" th:href="@{/css/security/hiddenByAuthed.css}">
+<!--<link rel="stylesheet" href="../static/css/mainPage.css" th:href="@{/css/mainPage.css}">-->
+<!--<link rel="stylesheet" href="../static/css/navbar.css" th:href="@{/css/navbar.css}">-->
+<link rel="stylesheet" th:href="@{/css/mainPage.css}">
+<link rel="stylesheet" th:href="@{/css/navbar.css}">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light nav-bg border border-dark">
+    <a class="navbar-brand" th:href="@{/}">Главная</a>
+
+    <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto">
+            <li class="link-nav">
+                <a class="link" th:href="@{/tournament}">Турниры</a>
+            </li>
+            <li class="link-nav">
+                <a class="link" th:href="@{/player}">Игрокам</a>
+            </li>
+            <li class="link-nav">
+                <a class="link" th:href="@{/organizer}">Организаторам</a>
+            </li>
+            <li class="link-nav">
+                <a class="link" th:href="@{/user}">Мой профиль</a>
+            </li>
+        </ul>
+
+    </div>
+
+    <div class="hiddenByUnAuth">
+        <form class="form-inline my-2 my-lg-0" th:action="@{/auth/logout}" method="post">
+            <input class="btn btn-outline-danger my-2 my-sm-0" type="submit" value="Выйти"/>
+        </form>
+    </div>
+    <div class="hiddenByAuthed">
+        <form style="margin: 3px" class="form-inline my-2 my-lg-0" th:action="@{/auth/registration}" method="get">
+            <input class="btn btn-outline-secondary my-2 my-sm-0" type="submit" value="Зарегистрироваться"/>
+        </form>
+    </div>
+    <div class="hiddenByAuthed">
+        <form style="margin: 3px" class="form-inline my-2 my-lg-0" th:action="@{/auth/login}" method="get">
+            <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Войти"/>
+        </form>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row allHeight">
+        <div class="col idents tournaments">
+            <h5 align="center">Турниры</h5>
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Название</th>
+                    <th scope="col">Игроков</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tour : ${tournaments}" th:onclick="'window.location.href = \'' + @{/tournament/{id}(id=${tour.id})} + '\''" >
+                    <td th:text="${tour.id}"/>
+                    <td th:text="${tour.name}"/>
+                    <td th:text="${tour.playersCount}"/>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="col-6 idents info">
+            Geek Playground - это система, предоставляющая возможнность реализовать
+            свой программерский потенциал путем решения игровых задач и играя с другими игроками.
+            Учавствуй в турнирах, занимай призовые места и будешь увековечен на доске почета справа.
+            Можешь писать на любом языке (в пределах разумного).
+            <br><br>
+            **НАДО БУДЕТ НАКИДАТЬ ИНФОРМАЦИОННУЮ РЕЧЬ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ**
+            <br><br>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque iure maiores nam nesciunt quos, voluptates. Aliquam dolore earum explicabo impedit, itaque molestiae non praesentium quae quia quidem suscipit voluptates voluptatibus.
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cupiditate esse in maiores nemo nesciunt nulla quam sit temporibus tenetur vitae! Consequatur culpa ex nemo nihil pariatur tenetur velit? Consequuntur, ipsum?
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. A alias assumenda atque dolore, dolorem dolorum ducimus eligendi error explicabo illum in ipsam minima officiis praesentium sapiente sunt suscipit. Fuga, porro?
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab commodi delectus dolor ea, hic id magnam nesciunt non odio porro quibusdam sed sunt vero. Eligendi impedit quasi quod sequi voluptatibus?
+        </div>
+        <div class="col idents users">
+            <h5 align="center">Топ игроков</h5>
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">№</th>
+                    <th scope="col">Имя игрока</th>
+                    <th scope="col">Очки</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="player, iStat : ${topUsers}" th:onclick="'window.location.href = \'' + @{/users/{username}(username=${player.userAccount.username})} + '\''" >
+                    <td th:text="${iStat.index+1}"/>
+                    <td th:text="${player.userAccount.username}"/>
+                    <td th:text="${player.points}"/>
+                </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,6 @@
+edu\mitin\playground\tournaments\model\PlayersTournamentsRelation.class
+edu\mitin\playground\tournaments\repository\TournamentRepository.class
+edu\mitin\playground\tournaments\repository\PlayersTournamentsRelationRepository.class
+edu\mitin\playground\tournaments\model\Tournament.class
+edu\mitin\playground\tournaments\TournamentService.class
+edu\mitin\playground\tournaments\impl\TournamentServiceImpl.class
