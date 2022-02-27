@@ -21,3 +21,8 @@ hs_err_pid*
 
 #idea
 .idea
+
+#idea files
+*.iml
+*.ipr
+*.iws
