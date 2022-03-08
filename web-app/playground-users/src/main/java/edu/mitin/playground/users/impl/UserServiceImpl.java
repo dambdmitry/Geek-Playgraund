@@ -99,6 +99,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<Player> getPlayerByUserAccount(User user) {
+        return playerRepository.findByUserAccount(user);
+    }
+
+    @Override
     public Optional<User> getUserByUsername(String username) {
         UserDetails user = null;
         try {

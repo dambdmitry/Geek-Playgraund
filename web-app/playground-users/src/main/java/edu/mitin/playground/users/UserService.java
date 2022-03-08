@@ -17,6 +17,8 @@ public interface UserService extends UserDetailsService {
 
     boolean registerPlayer(User user);
 
+    Optional<Player> getPlayerByUserAccount(User user);
+
     Optional<User> getUserByUsername(String username);
 
     List<Player> getAllPlayers();

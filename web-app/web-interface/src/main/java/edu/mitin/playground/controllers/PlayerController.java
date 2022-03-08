@@ -10,6 +10,6 @@ public class PlayerController {
 
     @GetMapping("")
     public String playerPage() {
-        return "playerController";
+        return "player/playerController";
     }
 }

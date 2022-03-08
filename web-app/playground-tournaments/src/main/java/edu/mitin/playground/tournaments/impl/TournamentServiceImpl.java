@@ -39,13 +39,13 @@ public class TournamentServiceImpl implements TournamentService {
         Optional<User> dmitry = userService.getUserByUsername("Dmitry");
         List<Tournament> tours = List.of(new Tournament(dmitry.get(), "Example1", 12),
                 new Tournament(dmitry.get(), "Example2", 12),
-                new Tournament(dmitry.get(), "Example3", 1),
+                new Tournament(dmitry.get(), "HenkaleyHochu", 1),
                 new Tournament(dmitry.get(), "Example4", 22),
-                new Tournament(dmitry.get(), "Example5", 111),
+                new Tournament(dmitry.get(), "Putin", 111),
                 new Tournament(dmitry.get(), "Example6", 4),
-                new Tournament(dmitry.get(), "Example7", 9),
+                new Tournament(dmitry.get(), "OurUkraine", 9),
                 new Tournament(dmitry.get(), "Example8", 0),
-                new Tournament(dmitry.get(), "Example9", 12),
+                new Tournament(dmitry.get(), "fuck", 12),
                 new Tournament(dmitry.get(), "Example10", 222));
         tournamentRepository.saveAll(tours);
     }
@@ -64,8 +64,32 @@ public class TournamentServiceImpl implements TournamentService {
     }
 
     @Override
+    public boolean registerPlayerToTournament(Tournament tournament, User user) {
+
+        userService.registerPlayer(user);
+
+        Optional<Player> playerByUserAccount = userService.getPlayerByUserAccount(user);
+        if (playerByUserAccount.isEmpty()) {
+            return false;
+        }
+        Player player = playerByUserAccount.get();
+        PlayersTournamentsRelation relation = new PlayersTournamentsRelation();
+        relation.setPlayer(player);
+        relation.setTournament(tournament);
+        tournament.setPlayersCount(tournament.getPlayersCount() + 1);
+        ptRelationRepository.save(relation);
+        tournamentRepository.save(tournament);
+        return true;
+    }
+
+    @Override
     public Optional<Tournament> getTournamentById(Long id) {
         return tournamentRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Tournament> findTournamentByName(String tournamentName) {
+        return tournamentRepository.findTournamentByName(tournamentName);
     }
 
     @Override
@@ -96,7 +120,17 @@ public class TournamentServiceImpl implements TournamentService {
     }
 
     @Override
+    public Iterable<Tournament> getByTournamentName(String tournamentName) {
+        return tournamentRepository.findTournamentsByName(tournamentName);
+    }
+
+    @Override
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.findAll(Sort.by("id"));
+    }
+
+    @Override
+    public List<Tournament> getByPartTournamentName(String partName) {
+        return tournamentRepository.findTournamentsByNameContaining(partName);
     }
 }

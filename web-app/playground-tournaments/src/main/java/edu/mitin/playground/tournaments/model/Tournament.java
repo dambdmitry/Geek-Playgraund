@@ -14,10 +14,10 @@ public class Tournament {
     @ManyToOne
     @JoinColumn()
     private User owner;
-
     private String name;
-
     private Integer playersCount;
+    private String gameDescription;
+    private String gameRules;
 
     public Tournament(User owner, String name, Integer playersCount) {
         this.owner = owner;
@@ -27,6 +27,26 @@ public class Tournament {
 
     public Tournament() {
 
+    }
+
+    public String getGameRules() {
+        return gameRules;
+    }
+
+    public void setGameRules(String gameRules) {
+        this.gameRules = gameRules;
+    }
+
+    public void setPlayersCount(Integer playersCount) {
+        this.playersCount = playersCount;
+    }
+
+    public String getGameDescription() {
+        return gameDescription;
+    }
+
+    public void setGameDescription(String gameDescription) {
+        this.gameDescription = gameDescription;
     }
 
     public Integer getPlayersCount() {

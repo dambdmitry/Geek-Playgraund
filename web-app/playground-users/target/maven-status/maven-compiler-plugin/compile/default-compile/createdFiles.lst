@@ -6,12 +6,12 @@ edu\mitin\playground\users\admin\model\OrganizerRequest.class
 edu\mitin\playground\users\impl\UserServiceImpl.class
 edu\mitin\playground\users\config\ApplicationConfig.class
 edu\mitin\playground\users\admin\AdminService.class
-edu\mitin\playground\users\organizer\OrganizerService.class
+edu\mitin\playground\users\admin\impl\RequestServiceImpl.class
 edu\mitin\playground\users\config\MvcConfig.class
 edu\mitin\playground\users\config\WebSecurityConfig.class
 edu\mitin\playground\users\model\User.class
 edu\mitin\playground\users\model\Role.class
+edu\mitin\playground\users\admin\RequestService.class
 edu\mitin\playground\users\repository\PlayerRepository.class
 edu\mitin\playground\users\model\Player.class
-edu\mitin\playground\users\organizer\impl\OrganizerServiceImpl.class
 edu\mitin\playground\users\repository\UserRepository.class

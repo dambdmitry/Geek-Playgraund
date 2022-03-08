@@ -28,7 +28,9 @@ public class User implements UserDetails {
     }
 
     public void setRole(Role role) {
-        this.role = role;
+        if (this.role != Role.ADMIN){
+            this.role = role;
+        }
     }
 
     public User(){}
