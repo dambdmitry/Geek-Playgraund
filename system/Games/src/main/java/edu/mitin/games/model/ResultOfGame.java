@@ -37,6 +37,13 @@ public class ResultOfGame {
         rightPlayerSteps.add(step);
     }
 
+    public void addPlayerStep(Player player, String step) {
+        if (leftPlayer.equals(player)) {
+            leftPlayerSteps.add(step);
+        } else if (rightPlayer.equals(player)) {
+            rightPlayerSteps.add(step);
+        }
+    }
 
     public String toString(){
         String res = "";

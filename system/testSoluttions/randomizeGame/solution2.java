@@ -8,7 +8,7 @@ public class solution2{
         System.out.println(firstAction);
         System.out.flush();
 
-        int myShot = 1;
+        int myShot = 2;
         while (true) {
             //Ответ на выстрел
             int answer = Integer.parseInt(scanner.nextLine());

@@ -19,8 +19,8 @@ public class RandomizeGame implements Game {
     }
 
     Player player1;
-    Integer randomPlayer1 = 44;//new Random().nextInt(100) + 1;
-    Integer randomPlayer2 = new Random().nextInt(100) + 1;
+    Integer randomPlayer1 = (int) (Math.random()*(100+1));
+    Integer randomPlayer2 = (int) (Math.random()*(100+1));
     Player player2;
 
     ResultOfGame gameResult;
@@ -39,6 +39,8 @@ public class RandomizeGame implements Game {
     public void registerPlayers(Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
+        System.out.println(randomPlayer1);
+        System.out.println(randomPlayer2);
         gameResult = new ResultOfGame(player1, player2);
     }
 
@@ -46,7 +48,6 @@ public class RandomizeGame implements Game {
     public String doAction(String action, Player playerWhoAttack) {
         int shot = Integer.parseInt(action);
         if (playerWhoAttack.equals(player1)) {
-            gameResult.addLeftPlayerStep(String.valueOf(shot));
             if (shot < randomPlayer2) {
                 return "-1";
             }
@@ -57,7 +58,6 @@ public class RandomizeGame implements Game {
                 return "0";
             }
         } else if (playerWhoAttack.equals(player2)) {
-            gameResult.addRightPlayerStep(String.valueOf(shot));
             if (shot < randomPlayer1) {
                 return "-1";
             }
@@ -74,6 +74,7 @@ public class RandomizeGame implements Game {
     @Override
     public boolean isWinAction(String action, Player playerWhoAttack) {
         int shot = Integer.parseInt(action);
+        gameResult.addPlayerStep(playerWhoAttack, action);
         boolean isWin;
         if (playerWhoAttack.equals(player1)) {
             isWin = randomPlayer2.equals(shot);
@@ -84,6 +85,7 @@ public class RandomizeGame implements Game {
         }
         if (isWin) {
             gameResult.setWinner(playerWhoAttack);
+
         }
         return isWin;
     }
@@ -91,15 +93,5 @@ public class RandomizeGame implements Game {
     @Override
     public ResultOfGame getResultOfGame() {
         return gameResult;
-    }
-
-    private Integer getPlayerNumber(Player player) {
-        if (player.equals(player1)) {
-            return randomPlayer1;
-        } else if (player.equals(player2)) {
-            return randomPlayer2;
-        } else {
-            throw new RuntimeException("Такого игрока нет");
-        }
     }
 }
