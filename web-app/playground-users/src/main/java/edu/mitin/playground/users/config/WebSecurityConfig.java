@@ -1,7 +1,7 @@
 package edu.mitin.playground.users.config;
 
 import edu.mitin.playground.users.UserService;
-import edu.mitin.playground.users.model.Permission;
+import edu.mitin.playground.users.entity.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -35,6 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/errors/**").permitAll()
                     .antMatchers("/tournaments").permitAll()
                     .antMatchers("/tournaments/*").permitAll()
+                    .antMatchers(HttpMethod.POST, "/tournaments/*").permitAll()
                     .antMatchers("/player").permitAll()
                     .antMatchers("/organizer").permitAll()
                      .antMatchers("/user").hasAuthority(Permission.USER_PROFILE.getPermission())

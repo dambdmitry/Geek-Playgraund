@@ -1,6 +1,6 @@
 package edu.mitin.playground.users.repository;
 
-import edu.mitin.playground.users.model.User;
+import edu.mitin.playground.users.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

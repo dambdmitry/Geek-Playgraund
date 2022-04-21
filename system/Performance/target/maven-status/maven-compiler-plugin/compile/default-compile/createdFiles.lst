@@ -1,0 +1,8 @@
+edu\mitin\performance\model\PlayerModel.class
+edu\mitin\performance\model\TournamentResult.class
+edu\mitin\performance\model\Tournament.class
+edu\mitin\performance\model\GamesGrid.class
+edu\mitin\performance\model\Pair.class
+edu\mitin\performance\PerformanceService.class
+edu\mitin\performance\impl\PerformanceServiceImpl.class
+edu\mitin\performance\model\TournamentTable.class

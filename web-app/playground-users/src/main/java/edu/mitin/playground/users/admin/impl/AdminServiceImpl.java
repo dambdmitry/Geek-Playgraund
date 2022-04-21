@@ -2,12 +2,11 @@ package edu.mitin.playground.users.admin.impl;
 
 import edu.mitin.playground.users.UserService;
 import edu.mitin.playground.users.admin.AdminService;
-import edu.mitin.playground.users.admin.model.OrganizerRequest;
+import edu.mitin.playground.users.admin.entity.OrganizerRequest;
 import edu.mitin.playground.users.admin.repository.RequestRepository;
-import edu.mitin.playground.users.model.Role;
-import edu.mitin.playground.users.model.User;
+import edu.mitin.playground.users.entity.Role;
+import edu.mitin.playground.users.entity.User;
 import edu.mitin.playground.users.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,7 +55,7 @@ public class AdminServiceImpl implements AdminService {
         if (request.isEmpty()) {
             return;
         }
-        User requester = request.get().getRequester();
+        User requester = request.get().getAccount();
         Optional<User> byUsername = userRepository.findByUsername(requester.getUsername());
         if (byUsername.isEmpty()) {
             return;

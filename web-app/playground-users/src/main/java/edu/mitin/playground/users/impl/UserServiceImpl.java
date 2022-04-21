@@ -1,9 +1,9 @@
 package edu.mitin.playground.users.impl;
 
 import edu.mitin.playground.users.UserService;
-import edu.mitin.playground.users.model.Player;
-import edu.mitin.playground.users.model.Role;
-import edu.mitin.playground.users.model.User;
+import edu.mitin.playground.users.entity.Player;
+import edu.mitin.playground.users.entity.Role;
+import edu.mitin.playground.users.entity.User;
 import edu.mitin.playground.users.repository.PlayerRepository;
 import edu.mitin.playground.users.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +12,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
 @org.springframework.stereotype.Service
 public class UserServiceImpl implements UserService {
-    @PersistenceContext
-    private EntityManager em;
 
     private final UserRepository userRepository;
     private final PlayerRepository playerRepository;
@@ -32,29 +28,6 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.playerRepository = playerRepository;
         this.passwordEncoder = passwordEncoder;
-        initMockUsers();
-    }
-
-    private void initMockUsers(){
-        List<User> mockUsers = List.of(createUser("Dmitry", passwordEncoder.encode("123456"), Role.ADMIN),
-                createUser("IlonMask", passwordEncoder.encode("123456"), Role.USER),
-                createUser("Tim", passwordEncoder.encode("123456"), Role.USER),
-                createUser("Mary", passwordEncoder.encode("123456"), Role.USER),
-                createUser("Simon", passwordEncoder.encode("123456"), Role.USER),
-                createUser("Pumba", passwordEncoder.encode("123456"), Role.USER),
-                createUser("Vadim", passwordEncoder.encode("123456"), Role.USER));
-        userRepository.saveAll(mockUsers);
-        for (int i = 2; i < mockUsers.size(); i++) {
-            registerPlayer(mockUsers.get(i)); // Все игроки, а илон маск будет организааторос см. AdminServiceImpl
-        }
-    }
-
-    private User createUser(String username, String password, Role role){
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setRole(role);
-        return user;
     }
 
     @Override
@@ -85,11 +58,11 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         User playerAccount = byUsername.get();
-        if (playerRepository.findByUserAccount(playerAccount).isPresent()) {
+        if (playerRepository.findByAccount(playerAccount).isPresent()) {
             return false;
         }
         Player player = new Player();
-        player.setUserAccount(playerAccount);
+        player.setAccount(playerAccount);
         player.setPoints(0);
         playerRepository.save(player);
 
@@ -100,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<Player> getPlayerByUserAccount(User user) {
-        return playerRepository.findByUserAccount(user);
+        return playerRepository.findByAccount(user);
     }
 
     @Override

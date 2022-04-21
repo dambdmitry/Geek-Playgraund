@@ -1,7 +1,7 @@
 package edu.mitin.playground.users;
 
-import edu.mitin.playground.users.model.Player;
-import edu.mitin.playground.users.model.User;
+import edu.mitin.playground.users.entity.Player;
+import edu.mitin.playground.users.entity.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 

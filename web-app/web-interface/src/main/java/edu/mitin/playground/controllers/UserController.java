@@ -1,11 +1,11 @@
 package edu.mitin.playground.controllers;
 
 import edu.mitin.playground.tournaments.TournamentService;
-import edu.mitin.playground.tournaments.model.Tournament;
+import edu.mitin.playground.tournaments.entity.Tournament;
 import edu.mitin.playground.users.UserService;
-import edu.mitin.playground.users.model.Permission;
-import edu.mitin.playground.users.model.Player;
-import edu.mitin.playground.users.model.User;
+import edu.mitin.playground.users.entity.Permission;
+import edu.mitin.playground.users.entity.Player;
+import edu.mitin.playground.users.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;

@@ -1,7 +1,7 @@
 package edu.mitin.playground.controllers;
 
 import edu.mitin.playground.users.admin.AdminService;
-import edu.mitin.playground.users.admin.model.OrganizerRequest;
+import edu.mitin.playground.users.admin.entity.OrganizerRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

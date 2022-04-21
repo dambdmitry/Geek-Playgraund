@@ -1,6 +1,12 @@
-D:\University\Diploma\Geek-Playgraund\web-app\playground-tournaments\src\main\java\edu\mitin\playground\tournaments\model\Tournament.java
+D:\University\Diploma\Geek-Playgraund\web-app\playground-tournaments\src\main\java\edu\mitin\playground\games\impl\GameServiceImpl.java
 D:\University\Diploma\Geek-Playgraund\web-app\playground-tournaments\src\main\java\edu\mitin\playground\tournaments\repository\PlayersTournamentsRelationRepository.java
+D:\University\Diploma\Geek-Playgraund\web-app\playground-tournaments\src\main\java\edu\mitin\playground\games\entity\Game.java
 D:\University\Diploma\Geek-Playgraund\web-app\playground-tournaments\src\main\java\edu\mitin\playground\tournaments\impl\TournamentServiceImpl.java
 D:\University\Diploma\Geek-Playgraund\web-app\playground-tournaments\src\main\java\edu\mitin\playground\tournaments\repository\TournamentRepository.java
+D:\University\Diploma\Geek-Playgraund\web-app\playground-tournaments\src\main\java\edu\mitin\playground\games\repository\ProgramTemplateRepository.java
 D:\University\Diploma\Geek-Playgraund\web-app\playground-tournaments\src\main\java\edu\mitin\playground\tournaments\TournamentService.java
-D:\University\Diploma\Geek-Playgraund\web-app\playground-tournaments\src\main\java\edu\mitin\playground\tournaments\model\PlayersTournamentsRelation.java
+D:\University\Diploma\Geek-Playgraund\web-app\playground-tournaments\src\main\java\edu\mitin\playground\tournaments\entity\PlayersTournamentsRelation.java
+D:\University\Diploma\Geek-Playgraund\web-app\playground-tournaments\src\main\java\edu\mitin\playground\games\GameService.java
+D:\University\Diploma\Geek-Playgraund\web-app\playground-tournaments\src\main\java\edu\mitin\playground\tournaments\entity\Tournament.java
+D:\University\Diploma\Geek-Playgraund\web-app\playground-tournaments\src\main\java\edu\mitin\playground\games\entity\ProgramTemplate.java
+D:\University\Diploma\Geek-Playgraund\web-app\playground-tournaments\src\main\java\edu\mitin\playground\games\repository\GameRepository.java

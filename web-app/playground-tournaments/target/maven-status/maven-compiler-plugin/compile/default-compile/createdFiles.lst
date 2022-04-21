@@ -1,6 +1,12 @@
-edu\mitin\playground\tournaments\model\PlayersTournamentsRelation.class
+edu\mitin\playground\games\repository\GameRepository.class
+edu\mitin\playground\games\GameService.class
 edu\mitin\playground\tournaments\repository\TournamentRepository.class
-edu\mitin\playground\tournaments\repository\PlayersTournamentsRelationRepository.class
-edu\mitin\playground\tournaments\model\Tournament.class
 edu\mitin\playground\tournaments\TournamentService.class
+edu\mitin\playground\games\repository\ProgramTemplateRepository.class
+edu\mitin\playground\tournaments\entity\Tournament.class
+edu\mitin\playground\games\impl\GameServiceImpl.class
+edu\mitin\playground\games\entity\Game.class
+edu\mitin\playground\tournaments\repository\PlayersTournamentsRelationRepository.class
 edu\mitin\playground\tournaments\impl\TournamentServiceImpl.class
+edu\mitin\playground\games\entity\ProgramTemplate.class
+edu\mitin\playground\tournaments\entity\PlayersTournamentsRelation.class

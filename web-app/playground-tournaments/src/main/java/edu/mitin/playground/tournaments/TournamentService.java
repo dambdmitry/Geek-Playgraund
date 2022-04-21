@@ -1,9 +1,9 @@
 package edu.mitin.playground.tournaments;
 
-import edu.mitin.playground.users.model.Player;
-import edu.mitin.playground.users.model.User;
+import edu.mitin.playground.tournaments.entity.Tournament;
+import edu.mitin.playground.users.entity.Player;
+import edu.mitin.playground.users.entity.User;
 import org.springframework.stereotype.Service;
-import edu.mitin.playground.tournaments.model.Tournament;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +11,12 @@ import java.util.Optional;
 @Service
 public interface TournamentService {
 
-    boolean registerTournament(Tournament tournament);
+    /***
+     * Сохранение турнира в хрранилище
+     * @param tournament турнир для сохранения
+     * @return id сохраненного турнира
+     */
+    Long registerTournament(Tournament tournament);
 
     boolean registerPlayerToTournament(Tournament tournament, User user);
 
@@ -30,4 +35,6 @@ public interface TournamentService {
     List<Tournament> getAllTournaments();
 
     List<Tournament> getByPartTournamentName(String partName);
+
+    List<User> getAccountsByTournament(Long tournamentId);
 }

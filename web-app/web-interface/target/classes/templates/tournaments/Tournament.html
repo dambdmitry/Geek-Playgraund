@@ -61,11 +61,6 @@
             <a th:href="@{/users/{ownerId}(ownerId=${owner.getId().toString()})}" th:text="${owner.getUsername()}"></a>
         </div>
         <div class="col-8 mid fluid">
-            <h4 align="center">Описание игры турнира</h4>
-            <div th:text="${tournament.getGameDescription()}"></div>
-
-            <h4 align="center">Правила игры</h4>
-            <div th:text="${tournament.getGameRules()}"></div>
 
             <div th:if="${isPlayer}">
                 <div class=" row justify-content-center">
@@ -82,6 +77,11 @@
                 </div>
             </div>
         </div>
+        <div th:if="${isOrganizer}">
+            <form th:action="@{/tournaments/start/{id}(id=${tournament.id})}" method="post">
+                <input class="btn btn-outline-primary my-2 my-sm-0" type="submit" value="Начать турнир"/>
+            </form>
+        </div>
         <div class="col side">
             <div class="col idents users">
                 <h5 align="center">Игроки турнира</h5>
@@ -94,9 +94,9 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="player, iStat : ${players}" th:onclick="'window.location.href = \'' + @{/users/{username}(username=${player.userAccount.username})} + '\''" >
+                    <tr th:each="player, iStat : ${players}" th:onclick="'window.location.href = \'' + @{/users/{username}(username=${player.account.username})} + '\''" >
                         <td th:text="${iStat.index+1}"/>
-                        <td th:text="${player.userAccount.username}"/>
+                        <td th:text="${player.account.username}"/>
                         <td th:text="${player.points}"/>
                     </tr>
                     </tbody>

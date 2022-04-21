@@ -1,0 +1,8 @@
+edu\mitin\playground\results\model\TournamentTableRow.class
+edu\mitin\playground\results\repository\RoundStepRepository.class
+edu\mitin\playground\results\impl\ResultsStorageImpl.class
+edu\mitin\playground\results\repository\RoundRepository.class
+edu\mitin\playground\results\entity\Failure.class
+edu\mitin\playground\results\entity\Round.class
+edu\mitin\playground\results\ResultsStorages.class
+edu\mitin\playground\results\entity\RoundStep.class

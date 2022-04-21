@@ -1,6 +1,6 @@
 package edu.mitin.playground.users.admin;
 
-import edu.mitin.playground.users.admin.model.OrganizerRequest;
+import edu.mitin.playground.users.admin.entity.OrganizerRequest;
 import org.springframework.stereotype.Service;
 
 @Service

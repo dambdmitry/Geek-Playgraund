@@ -1,0 +1,14 @@
+edu\mitin\storage\TournamentStorage.class
+edu\mitin\storage\entity\Failure.class
+edu\mitin\storage\impl\TournamentStorageImpl.class
+edu\mitin\storage\repository\SolutionRepository.class
+edu\mitin\storage\repository\TournamentRepository.class
+edu\mitin\storage\entity\RoundStep.class
+edu\mitin\storage\repository\RoundRepository.class
+edu\mitin\storage\entity\Solution.class
+edu\mitin\storage\entity\Game.class
+edu\mitin\storage\entity\Round.class
+edu\mitin\storage\repository\RoundStepRepository.class
+edu\mitin\storage\repository\GameRepository.class
+edu\mitin\storage\entity\Tournament.class
+edu\mitin\storage\repository\FailureRepository.class

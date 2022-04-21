@@ -1,79 +1,103 @@
 package edu.mitin.playground.controllers;
 
+import com.google.gson.Gson;
+import edu.mitin.playground.communicate.ApiRequests;
+import edu.mitin.playground.dto.Response;
+import edu.mitin.playground.dto.Solution;
+import edu.mitin.playground.games.GameService;
+import edu.mitin.playground.games.entity.Game;
+import edu.mitin.playground.games.entity.ProgramTemplate;
+import edu.mitin.playground.results.entity.Round;
+import edu.mitin.playground.results.entity.RoundStep;
 import edu.mitin.playground.tournaments.TournamentService;
-import edu.mitin.playground.tournaments.model.Tournament;
+import edu.mitin.playground.tournaments.entity.Tournament;
 import edu.mitin.playground.users.UserService;
-import edu.mitin.playground.users.model.Permission;
-import edu.mitin.playground.users.model.Player;
-import edu.mitin.playground.users.model.User;
+import edu.mitin.playground.users.entity.Permission;
+import edu.mitin.playground.users.entity.Player;
+import edu.mitin.playground.users.entity.User;
+import edu.mitin.playground.results.ResultsStorages;
+import edu.mitin.playground.results.model.TournamentTableRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/tournaments")
 public class TournamentsController {
 
-    @Autowired
-    private TournamentService tournamentService;
+    private final String ERROR_ATTRIBUTE_NAME = "errorMsg";
+
+    private final TournamentService tournamentService;
+    private final UserService userService;
+    private final GameService gameService;
+    private final ResultsStorages resultsStorages;
 
     @Autowired
-    private UserService userService;
+    public TournamentsController(TournamentService tournamentService, UserService userService, GameService gameService, ResultsStorages resultsStorages) {
+        this.tournamentService = tournamentService;
+        this.userService = userService;
+        this.gameService = gameService;
+        this.resultsStorages = resultsStorages;
+    }
 
     @GetMapping("")
-    public String tournamentPage(Model model, @RequestParam(value = "search1", required = false) String search1){
-        model.addAttribute("isOrganizer", isOrganizer());
-        if (search1 != null) {
-            model.addAttribute("search", tournamentService.getByPartTournamentName(search1));
+    public String tournamentPage(Model model, @RequestParam(value = "searchParam", required = false) String searchParam) {
+        model.addAttribute("isOrganizer", hasCurrentUserPermission(Permission.ORGANIZER_PROFILE));
+        if (searchParam != null) {
+            model.addAttribute("search", tournamentService.getByPartTournamentName(searchParam));
         }
         model.addAttribute("allTours", tournamentService.getAllTournaments());
-        return "tournaments/tournamentsController";
+        return "tournaments/tournaments";
     }
 
     @PreAuthorize("hasAuthority('ORGANIZER')")
     @GetMapping("/create")
     public String createTournamentPage(Model model) {
         model.addAttribute("tournament", new Tournament());
+        final List<Game> allGames = gameService.getAllGames();
+        model.addAttribute("games", allGames);
         return "tournaments/createTournament";
     }
 
     @PreAuthorize("hasAuthority('ORGANIZER')")
     @PostMapping("/create")
     public String createTournament(Model model, Tournament tournament) {
-        if (tournamentService.findTournamentByName(tournament.getName()).isPresent()) {
-            model.addAttribute("errorMsg", "Турнир с таким названием уже существует");
+        if (isTournamentNameExists(tournament.getName())) {
+            model.addAttribute(ERROR_ATTRIBUTE_NAME, "Турнир с таким названием уже существует");
             return "tournaments/createTournament";
         }
-        Optional<User> owner = getCurrentUser();
-        if (owner.isPresent()) {
-            User ownerAccount = owner.get();
-            if (ownerAccount.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals(Permission.ORGANIZER_PROFILE.getPermission()))) {
-                tournament.setOwner(ownerAccount);
-                tournament.setPlayersCount(0);
-                tournamentService.registerTournament(tournament);
-
-                Long tourId = tournamentService.findTournamentByName(tournament.getName()).get().getId();
-                return "redirect:/tournaments/tournament/"+tourId;
-            }
-            return "errors/noAccess";
+        final Optional<Game> selectedGame = gameService.getGameByName(tournament.getGame().getName());
+        if (selectedGame.isEmpty()) {
+            model.addAttribute(ERROR_ATTRIBUTE_NAME, "Игра турнира не определена");
+            return "tournaments/createTournament";
         }
 
-        model.addAttribute("errorMsg", "Ты кто?");
-        return "tournaments/createTournament";
-
+        final Game game = selectedGame.get();
+        if (hasCurrentUserPermission(Permission.ORGANIZER_PROFILE)) {
+            User ownerAccount = getCurrentUser().get();
+            tournament.setOwner(ownerAccount);
+            tournament.setGame(game);
+            tournament.setPlayersCount(0);
+            Long tournamentId = tournamentService.registerTournament(tournament);
+            return "redirect:/tournaments/tournament/" + tournamentId;
+        }
+        return "errors/noAccess";
     }
 
     @GetMapping("tournament/{id}")
     public String showTournament(@PathVariable String id, Model model) {
+        if (!isCorrectId(id)) {
+            return "errors/notFound";
+        }
         long idTour = Long.parseLong(id);
-
         Optional<Tournament> tournamentById = tournamentService.getTournamentById(idTour);
         if (tournamentById.isPresent()) {
             Tournament tournament = tournamentById.get();
@@ -81,69 +105,197 @@ public class TournamentsController {
             List<Player> playersByTournament = tournamentService.getPlayersByTournament(tournament);
             model.addAttribute("tournament", tournament);
             model.addAttribute("isPlayer", isThePlayerOfTheTournament(tournament));
+            model.addAttribute("isOrganizer", hasCurrentUserPermission(Permission.ORGANIZER_PROFILE));
+            model.addAttribute("tournamentId", new Tournament());
             model.addAttribute("players", playersByTournament);
             model.addAttribute("owner", owner);
             return "tournaments/Tournament";
-        } else {
-            return "tournaments/tourNotFound";
         }
+        return "errors/notFound";
     }
 
     @GetMapping("tournament/{id}/solution")
-    public String sendPlayerSolutionPage(@PathVariable String id, Model model){
+    public String sendPlayerSolutionPage(@PathVariable String id, Model model) {
+        if (!isCorrectId(id)) {
+            return "errors/notFound";
+        }
+        long idTour = Long.parseLong(id);
+        Optional<Tournament> tournamentById = tournamentService.getTournamentById(idTour);
+        if (tournamentById.isPresent()) {
+            Tournament tournament = tournamentById.get();
+            final List<ProgramTemplate> templatesByGame = gameService.getGameProgramTemplates(tournament.getGame().getName()).get();
+            final List<String> gameLanguages = templatesByGame.stream().map(ProgramTemplate::getLanguage).collect(Collectors.toList());
+            model.addAttribute("templates", templatesByGame);
+            model.addAttribute("languages", gameLanguages);
+            model.addAttribute("tournament", tournament);
+            model.addAttribute("solution", new Solution("", "", "", "", 0L));
+            if (isThePlayerOfTheTournament(tournament)) {
+                return "tournaments/solutions/gameSolution";
+            } else {
+                return "errors/noAccess";
+            }
+        }
+        return "errors/notFound";
+    }
+
+    @PostMapping("/sendSolution")
+    public String sendPlayerSolutionPage(Solution solution, Model model) {
+        final String jsonSolution = createSolutionJson(solution);
+        try {
+            final String responseBody = new ApiRequests().sendPost(ApiRequests.ActionRequestBody.VERIFY, jsonSolution);
+            final Response response = new Gson().fromJson(responseBody, Response.class);
+            var resultMsg = response.isSuccess() ? "Успешно" : "Программа не прошла проверку";
+            model.addAttribute("result", "Результат: " + resultMsg);
+            model.addAttribute("failure", !response.isSuccess());
+            if (!response.isSuccess()) {
+                model.addAttribute("tournament", solution.getTournamentId().toString());
+                model.addAttribute("error", response.getDescription());
+            }
+            System.out.println(response);
+            return "tournaments/solutions/solutionResult";
+        } catch (IOException | InterruptedException e) {
+            return "errors/serverError";
+        }
+    }
+
+    @PostMapping("tournament/{id}/register")
+    public String registerToTournament(@PathVariable String id, Model model) {
+        if (!isCorrectId(id)) {
+            return "errors/notFound";
+        }
         long idTour = Long.parseLong(id);
         Optional<Tournament> tournamentById = tournamentService.getTournamentById(idTour);
         if (tournamentById.isPresent()) {
             Tournament tournament = tournamentById.get();
             if (isThePlayerOfTheTournament(tournament)) {
-                return "tournaments/gameSolution";
-            } else {
-                return "errors/noAccess";
-            }
-        }else {
-            return  "errors/notFound";
-        }
-    }
-
-//    @GetMapping("tournament/{id}/register")
-//    public String registerToTournamentPage(@PathVariable String id, Model model) {
-//        long idTour = Long.parseLong(id);
-//        Optional<Tournament> tournamentById = tournamentService.getTournamentById(idTour);
-//        if (tournamentById.isPresent()) {
-//            Tournament tournament = tournamentById.get();
-//            if (isThePlayerOfTheTournament(tournament)){
-//                return "errors/notFound";
-//            }
-//            model.addAttribute("tournament", tournament);
-//            return "tournaments/tournamentRegistration";
-//        }
-//        return "errors/notFound";
-//    }
-
-    @PostMapping("tournament/{id}/register")
-    public String registerToTournament(@PathVariable String id, Model model) {
-        long idTour = Long.parseLong(id);
-        Optional<Tournament> tournamentById = tournamentService.getTournamentById(idTour);
-        if (tournamentById.isPresent()) {
-            Tournament tournament = tournamentById.get();
-            if (isThePlayerOfTheTournament(tournament)){
                 return "errors/notFound";
             }
             User user = getCurrentUser().get();
-            if (tournamentService.registerPlayerToTournament(tournament, user)){
+            if (tournamentService.registerPlayerToTournament(tournament, user)) {
                 return "redirect:/tournaments/tournament/" + tournament.getId().toString();
             }
         }
         return "errors/notFound";
     }
 
-    private boolean isOrganizer() {
-        return SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority).anyMatch(auth -> auth.equals("ORGANIZER"));
+
+    @PreAuthorize("hasAuthority('ORGANIZER')")
+    @PostMapping(value = "/start/{id}")
+    public String startTournament(@PathVariable String id, Model model) {
+        if (!isCorrectId(id)) {
+            return "errors/notFound";
+        }
+        long idTour = Long.parseLong(id);
+        if (!tournamentService.getTournamentById(idTour).get().getOwner().getId().equals(getCurrentUser().get().getId())) {
+            return "errors/noAccess";
+        }
+        try {
+            String responseBody = new ApiRequests().sendPostRequestParams(ApiRequests.ActionRequestParams.START_TOURNAMENT, List.of(id));
+            final Response response = new Gson().fromJson(responseBody, Response.class);
+            if (response.isSuccess()) {
+                return "redirect:/tournaments/tournament/" + id + "/results";
+            } else {
+                model.addAttribute(ERROR_ATTRIBUTE_NAME, response.getDescription());
+                return "errors/error";
+            }
+        } catch (IOException | InterruptedException e) {
+            return "errors/serverError";
+        }
+    }
+
+    @GetMapping("/tournament/{id}/results")
+    public String getTournamentResults(@PathVariable String id, Model model) {
+        if (!isCorrectId(id)) {
+            return "errors/notFound";
+        }
+        long idTour = Long.parseLong(id);
+        Optional<Tournament> tournamentById = tournamentService.getTournamentById(idTour);
+        if (tournamentById.isEmpty()) {
+            return "errors/notFound";
+        }
+        Tournament tournament = tournamentById.get();
+        model.addAttribute("tournament", tournament);
+        if (resultsStorages.hasTournamentFailedRounds(tournament.getId())) {
+            model.addAttribute(ERROR_ATTRIBUTE_NAME, "Турнир завершен с ошибкой, посмотреть результаты можно в отчете");
+            return "tournaments/results";
+        }
+        if (resultsStorages.isAllGamesPlayed(tournament.getId())) {
+            model.addAttribute("status", "Турнир завершен");
+        } else {
+            model.addAttribute("status", "Турнир в процессе");
+        }
+        List<TournamentTableRow> tournamentTable = resultsStorages.createSortedTournamentTable(idTour);
+        model.addAttribute("table", tournamentTable);
+        return "tournaments/results";
+    }
+
+    @GetMapping("/tournament/{id}/report")
+    public String getTournamentReport(@PathVariable String id, Model model) {
+        if (!isCorrectId(id)) {
+            return "errors/notFound";
+        }
+        long idTour = Long.parseLong(id);
+        Optional<Tournament> tournamentById = tournamentService.getTournamentById(idTour);
+        if (tournamentById.isEmpty()) {
+            return "errors/notFound";
+        }
+
+        Tournament tournament = tournamentById.get();
+        model.addAttribute("tournament", tournament);
+        if (resultsStorages.hasTournamentFailedRounds(tournament.getId())) {
+            model.addAttribute("result", "Турнир завершен с ошибкой");
+            List<Round> failedRounds = resultsStorages.getFailedRounds(tournament.getId());
+            model.addAttribute("failedRound", failedRounds);
+        } else {
+            model.addAttribute("result", "Турнир завершен успешно");
+        }
+        return "tournaments/report";
+    }
+
+    @GetMapping("/tournament/{id}/{playerName}/result")
+    public String getPlayerResult(@PathVariable Long id,
+                                  @PathVariable String playerName,
+                                  Model model) {
+        model.addAttribute("username", playerName);
+        List<Round> rounds = resultsStorages.createUserRounds(id, playerName);
+        model.addAttribute("rounds", rounds);
+        return "tournaments/playerResult";
+    }
+
+    @GetMapping("/tournament/round/{id}")
+    public String getPlayerResult(@PathVariable Long id,
+                                  Model model) {
+
+        Round round = resultsStorages.getRound(id);
+        if (round == null) {
+            return "errors/notFound";
+        }
+        List<RoundStep> roundSteps = resultsStorages.getSortedRoundSteps(id, round.getHostName(), round.getGuestName());
+        model.addAttribute("round", round.getHostName() + " vs " + round.getGuestName());
+        model.addAttribute("winner", "Победитель: " + round.getWinner());
+        model.addAttribute("steps", roundSteps);
+        return "tournaments/round";
+    }
+
+    private String createSolutionJson(Solution solution) {
+        solution.setPlayerName(getCurrentUser().get().getUsername());
+        return new Gson().toJson(solution);
+    }
+
+    private boolean isTournamentNameExists(String name) {
+        return tournamentService.findTournamentByName(name).isPresent();
+    }
+
+    private boolean isCorrectId(String id) {
+        return id.matches("^[0-9]+$");
+    }
+
+    private boolean hasCurrentUserPermission(Permission permission) {
+        final Optional<User> currentUser = getCurrentUser();
+        if (currentUser.isPresent()) {
+            return currentUser.get().getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals(permission.getPermission()));
+        }
+        return false;
     }
 
     private Optional<User> getCurrentUser() {
@@ -154,6 +306,6 @@ public class TournamentsController {
         Optional<User> currentUser = getCurrentUser();
         return currentUser.filter(user -> tournamentService.getPlayersByTournament(tournament)
                 .stream()
-                .anyMatch(player -> player.getUserAccount().getId().equals(user.getId()))).isPresent();
+                .anyMatch(player -> player.getAccount().getId().equals(user.getId()))).isPresent();
     }
 }

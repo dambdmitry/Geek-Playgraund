@@ -2,9 +2,9 @@ package edu.mitin.playground.users.admin.impl;
 
 import edu.mitin.playground.users.UserService;
 import edu.mitin.playground.users.admin.RequestService;
-import edu.mitin.playground.users.admin.model.OrganizerRequest;
+import edu.mitin.playground.users.admin.entity.OrganizerRequest;
 import edu.mitin.playground.users.admin.repository.RequestRepository;
-import edu.mitin.playground.users.model.User;
+import edu.mitin.playground.users.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +29,7 @@ public class RequestServiceImpl implements RequestService {
             return;
         }
         User requester = userByUsername.get();
-        request.setRequester(requester);
+        request.setAccount(requester);
         requestRepository.save(request);
     }
 }

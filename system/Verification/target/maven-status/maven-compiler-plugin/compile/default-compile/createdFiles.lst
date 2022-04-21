@@ -1,0 +1,5 @@
+edu\mitin\verification\dto\Solution.class
+edu\mitin\verification\impl\Verification.class
+edu\mitin\verification\dto\VerificationResult$Result.class
+edu\mitin\verification\VerificationService.class
+edu\mitin\verification\dto\VerificationResult.class

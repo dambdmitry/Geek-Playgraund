@@ -1,8 +1,8 @@
 package edu.mitin.playground.tournaments.repository;
 
-import edu.mitin.playground.users.model.User;
+import edu.mitin.playground.users.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import edu.mitin.playground.tournaments.model.Tournament;
+import edu.mitin.playground.tournaments.entity.Tournament;
 
 import java.util.List;
 import java.util.Optional;

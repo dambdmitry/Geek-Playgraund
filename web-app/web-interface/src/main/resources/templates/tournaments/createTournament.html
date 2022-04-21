@@ -62,28 +62,26 @@
             <h4 align="center">Заполните необходимые поля</h4>
 
             <div class="row">
-                <!--/*@thymesVar id="tournament" type="edu.mitin.playground.tournaments.model.Tournament"*/-->
+                <!--/*@thymesVar id="tournament" type="edu.mitin.playground.tournaments.entity.Tournament"*/-->
                 <form th:action="@{/tournaments/create}" th:object="${tournament}" method="post">
                     <div class="border sizing-box container justify-content-md-center">
                         <div class="row info justify-content-md-center">
-                            Придумайте логин и пароль
+                            Заполните все поля
                         </div>
                         <div class="row warning-mes">
                             <div th:text="${errorMsg}">
                             </div>
-
                         </div>
                         <div class="form-group row">
                             <label for="tourName">Название турнира</label>
                             <input class="form-control" type="text" name="tourName" id="tourName" th:field="*{name}"/>
                         </div>
                         <div class="form-group row">
-                            <label for="gameDescription">Описание игры турнира</label>
-                            <textarea class="form-control" type="text" name="gameDescription" id="gameDescription" th:field="*{gameDescription}"></textarea>
-                        </div>
-                        <div class="form-group row">
-                            <label for="gameRules">Правила игры</label>
-                            <textarea class="form-control" type="text" name="gameRules" id="gameRules" th:field="*{gameRules}"></textarea>
+                            <label for="game">Игра</label>
+                            <select th:field="*{game.name}" id="game" name="game">
+                                <option th:each="game : ${games}" th:value="${game.getName()}" th:text="${game.getName()}"
+                                        th:selected="${games.get(0)}"></option>
+                            </select>
                         </div>
                         <div class="row justify-content-md-center">
                             <input class="btn btn-primary" type="submit" value="Зарегистрировать турнир"/>
@@ -95,9 +93,7 @@
         <div class="col side">
         </div>
     </div>
-
 </div>
-
 </div>
 </body>
 </html>

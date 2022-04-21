@@ -1,7 +1,7 @@
 package edu.mitin.playground.controllers;
 
 import edu.mitin.playground.users.UserService;
-import edu.mitin.playground.users.model.User;
+import edu.mitin.playground.users.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

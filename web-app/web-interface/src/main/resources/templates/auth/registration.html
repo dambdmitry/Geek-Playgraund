@@ -10,7 +10,7 @@
     <link rel="stylesheet" th:href="@{/css/auth.css}">
 </head>
 <body>
-<!--/*@thymesVar id="user" type="edu.mitin.playground.users.model.User"*/-->
+<!--/*@thymesVar id="user" type="edu.mitin.playground.users.entity.User"*/-->
     <form th:action="@{/auth/registration}" th:object="${user}" method="post">
         <div class="border sizing-box container justify-content-md-center">
             <div class="row info justify-content-md-center">

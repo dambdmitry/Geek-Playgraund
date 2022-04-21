@@ -1,9 +1,14 @@
 edu\mitin\playground\controllers\HttpErrorController.class
 edu\mitin\playground\controllers\UserController.class
+edu\mitin\playground\dto\Response.class
 edu\mitin\playground\controllers\PlayerController.class
 edu\mitin\playground\controllers\AuthController.class
+edu\mitin\playground\communicate\ApiRequests$ActionRequestBody.class
 edu\mitin\playground\controllers\AdminController.class
+edu\mitin\playground\dto\Solution.class
 edu\mitin\playground\Application.class
 edu\mitin\playground\controllers\TournamentsController.class
+edu\mitin\playground\communicate\ApiRequests$ActionRequestParams.class
+edu\mitin\playground\communicate\ApiRequests.class
 edu\mitin\playground\controllers\MainController.class
 edu\mitin\playground\controllers\OrganizerController.class
