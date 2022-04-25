@@ -25,16 +25,16 @@
     <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto">
             <li class="link-nav">
-                <a class="link" th:href="@{/templates/tournaments}">Турниры</a>
+                <a class="link" th:href="@{/tournaments}">Турниры</a>
             </li>
             <li class="link-nav">
-                <a class="link" th:href="@{/templates/player}">Игрокам</a>
+                <a class="link" th:href="@{/player}">Игрокам</a>
             </li>
             <li class="link-nav">
-                <a class="link" th:href="@{/templates/organizer}">Организаторам</a>
+                <a class="link" th:href="@{/organizer}">Организаторам</a>
             </li>
             <li class="link-nav">
-                <a class="link" th:href="@{/templates/user}">Мой профиль</a>
+                <a class="link" th:href="@{/user}">Мой профиль</a>
             </li>
         </ul>
 
@@ -87,6 +87,12 @@
                             </select>
                         </div>
                         <script th:inline="javascript">
+                            var templates = /*[[${templates}]]*/ null
+                            let val = document.querySelector("select").value
+                            let find = templates.find(ell => ell.language === val)
+                            document.getElementById("solution").value = find.template;
+                        </script>
+                        <script th:inline="javascript">
                             /*<![CDATA[*/
 
                             var templates = /*[[${templates}]]*/ null
@@ -94,9 +100,6 @@
                                 let find = templates.find(ell => ell.language === e.target.value);
                                 document.getElementById("solution").value = find.template;
                             })
-                            hljs.highlightElement(document.getElementById("solution"))
-                                // then highlight each
-                            /*]]>*/
                         </script>
                         <div class="form-group row">
                             <input type="hidden" th:value="${tournament.game.name}" name="game" />

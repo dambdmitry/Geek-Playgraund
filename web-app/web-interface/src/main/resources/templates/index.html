@@ -65,8 +65,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="tour : ${tournaments}" th:onclick="'window.location.href = \'' + @{/tournaments/tournament/{id}(id=${tour.id})} + '\''" >
-                    <td th:text="${tour.id}"/>
+                <tr th:each="tour, iStat : ${tournaments}" th:onclick="'window.location.href = \'' + @{/tournaments/tournament/{id}(id=${tour.id})} + '\''" >
+                    <td th:text="${iStat.index+1}"/>
                     <td th:text="${tour.name}"/>
                     <td th:text="${tour.playersCount}"/>
                 </tr>
@@ -74,18 +74,19 @@
             </table>
 
         </div>
-        <div class="col-6 idents info">
+        <div class="col-4 idents info">
             Geek Playground - это система, предоставляющая возможнность реализовать
             свой программерский потенциал путем решения игровых задач и играя с другими игроками.
             Учавствуй в турнирах, занимай призовые места и будешь увековечен на доске почета справа.
-            Можешь писать на любом языке (в пределах разумного).
+            В системе имеется определенный набор языков программирования.
+            Подробнее о наборе можно посмотреть на странице <a th:href="@{/player}">"Игрокам"</a>.
+
             <br><br>
-            **НАДО БУДЕТ НАКИДАТЬ ИНФОРМАЦИОННУЮ РЕЧЬ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ**
+            Также имеется возможность создавать свои турниры. Это актуально для преподавателей, чтобы проводить игры между студентами.
+            Это позволяет внести состязательные и игровые элементы в процесс обучения.
+            Подробнее об организации турниров можно посмотреть на странице <a th:href="@{/organizer}">"Организаторам"</a>.
             <br><br>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque iure maiores nam nesciunt quos, voluptates. Aliquam dolore earum explicabo impedit, itaque molestiae non praesentium quae quia quidem suscipit voluptates voluptatibus.
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cupiditate esse in maiores nemo nesciunt nulla quam sit temporibus tenetur vitae! Consequatur culpa ex nemo nihil pariatur tenetur velit? Consequuntur, ipsum?
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. A alias assumenda atque dolore, dolorem dolorum ducimus eligendi error explicabo illum in ipsam minima officiis praesentium sapiente sunt suscipit. Fuga, porro?
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab commodi delectus dolor ea, hic id magnam nesciunt non odio porro quibusdam sed sunt vero. Eligendi impedit quasi quod sequi voluptatibus?
+
         </div>
         <div class="col idents users">
             <h5 align="center">Топ игроков</h5>

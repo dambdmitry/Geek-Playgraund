@@ -23,6 +23,20 @@ public class Round {
 
     private String winner;
 
+    @Column(columnDefinition = "TEXT")
+    private String hostGoal;
+
+    @Column(columnDefinition = "TEXT")
+    private String guestGoal;
+
+    public void setHostGoal(String hostGoal) {
+        this.hostGoal = hostGoal;
+    }
+
+    public void setGuestGoal(String guestGoal) {
+        this.guestGoal = guestGoal;
+    }
+
     public Round() {
     }
 

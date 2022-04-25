@@ -15,6 +15,7 @@ public class Tournament {
     private Game game;
 
     private String name;
+    private String status;
 
     public Tournament(Game game, String name) {
         this.game = game;
@@ -23,6 +24,14 @@ public class Tournament {
 
     public Tournament() {
 
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Game getGame() {

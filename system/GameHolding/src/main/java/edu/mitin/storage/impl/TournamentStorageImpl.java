@@ -2,6 +2,7 @@ package edu.mitin.storage.impl;
 
 import edu.mitin.storage.TournamentStorage;
 import edu.mitin.storage.entity.*;
+import edu.mitin.storage.entity.model.TournamentStatus;
 import edu.mitin.storage.repository.*;
 import org.springframework.stereotype.Service;
 
@@ -81,13 +82,15 @@ public class TournamentStorageImpl implements TournamentStorage {
     }
 
     @Override
-    public Long saveRound(Long tournamentId, String hostPlayerName, String guestPlayerName, String winnerName) {
+    public Long saveRound(Long tournamentId, String hostPlayerName, String guestPlayerName, String winnerName, String hostGoal, String guestGoal) {
         Tournament tournament = tournamentRepository.findById(tournamentId).get();
         Round round = new Round();
         round.setTournament(tournament);
         round.setHostName(hostPlayerName);
         round.setGuestName(guestPlayerName);
         round.setWinner(winnerName);
+        round.setGuestGoal(guestGoal);
+        round.setHostGoal(hostGoal);
         Round save = roundRepository.save(round);
         return save.getId();
     }
@@ -118,6 +121,18 @@ public class TournamentStorageImpl implements TournamentStorage {
     @Override
     public Boolean isPresentTournament(Long tournamentId) {
         return tournamentRepository.findById(tournamentId).isPresent();
+    }
+
+    @Override
+    public void setTournamentStatus(Long tournamentId, TournamentStatus status) {
+        Tournament tournament = tournamentRepository.findById(tournamentId).get();
+        tournament.setStatus(status.name());
+        tournamentRepository.save(tournament);
+    }
+
+    @Override
+    public void updatePlayerPoints(String playerName, Integer points) {
+
     }
 
 }

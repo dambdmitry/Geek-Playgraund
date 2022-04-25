@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS round
     guest_name    VARCHAR(100),
     winner        VARCHAR(100),
     failure_id    INT,
+    host_goal     TEXT,
+    guest_goal    TEXT,
     FOREIGN KEY (tournament_id) REFERENCES tournament (id),
     FOREIGN KEY (failure_id) REFERENCES failure(id)
 );

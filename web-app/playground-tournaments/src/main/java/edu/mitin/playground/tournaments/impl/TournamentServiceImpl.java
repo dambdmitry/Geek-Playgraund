@@ -2,24 +2,25 @@ package edu.mitin.playground.tournaments.impl;
 
 import edu.mitin.playground.tournaments.TournamentService;
 import edu.mitin.playground.tournaments.entity.PlayersTournamentsRelation;
+import edu.mitin.playground.tournaments.entity.Solution;
 import edu.mitin.playground.tournaments.entity.Tournament;
 import edu.mitin.playground.games.repository.GameRepository;
 import edu.mitin.playground.games.repository.ProgramTemplateRepository;
+import edu.mitin.playground.tournaments.entity.model.TournamentStatus;
+import edu.mitin.playground.tournaments.repository.SolutionRepository;
 import edu.mitin.playground.users.UserService;
 import edu.mitin.playground.users.entity.Player;
 import edu.mitin.playground.users.entity.User;
 import edu.mitin.playground.tournaments.repository.PlayersTournamentsRelationRepository;
 import edu.mitin.playground.tournaments.repository.TournamentRepository;
+import edu.mitin.playground.users.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +32,8 @@ public class TournamentServiceImpl implements TournamentService {
 
     private GameRepository gameRepository;
     private ProgramTemplateRepository templateRepository;
+    private final PlayerRepository playerRepository;
+    private final SolutionRepository solutionRepository;
 
 
     @Autowired
@@ -38,7 +41,7 @@ public class TournamentServiceImpl implements TournamentService {
                                  PlayersTournamentsRelationRepository ptRelationRepository,
                                  UserService userService,
                                  GameRepository gameRepository,
-                                 ProgramTemplateRepository templateRepository) {
+                                 ProgramTemplateRepository templateRepository, PlayerRepository playerRepository, SolutionRepository solutionRepository) {
         this.tournamentRepository = tournamentRepository;
         this.ptRelationRepository = ptRelationRepository;
         this.userService = userService;
@@ -47,6 +50,8 @@ public class TournamentServiceImpl implements TournamentService {
 //        registryMockGames();
 //        registryMockTemplates();
 //        registerMockTournaments();
+        this.playerRepository = playerRepository;
+        this.solutionRepository = solutionRepository;
     }
 
 
@@ -122,6 +127,13 @@ public class TournamentServiceImpl implements TournamentService {
     }
 
     @Override
+    public void setTournamentStatus(Long tournamentId, TournamentStatus status) {
+        Tournament tournament = tournamentRepository.findById(tournamentId).get();
+        tournament.setStatus(status.name());
+        tournamentRepository.save(tournament);
+    }
+
+    @Override
     public boolean registerPlayerToTournament(Tournament tournament, User user) {
 
         userService.registerPlayer(user);
@@ -134,6 +146,7 @@ public class TournamentServiceImpl implements TournamentService {
         PlayersTournamentsRelation relation = new PlayersTournamentsRelation();
         relation.setPlayer(player);
         relation.setTournament(tournament);
+        relation.setPoints(0);
         tournament.setPlayersCount(tournament.getPlayersCount() + 1);
         ptRelationRepository.save(relation);
         tournamentRepository.save(tournament);
@@ -162,10 +175,32 @@ public class TournamentServiceImpl implements TournamentService {
     @Override
     public List<Player> getPlayersByTournament(Tournament tournament) {
         List<PlayersTournamentsRelation> relationsByTour = ptRelationRepository.findPlayersTournamentsRelationsByTournament(tournament);
-        return relationsByTour
-                .stream()
-                .map(PlayersTournamentsRelation::getPlayer)
-                .collect(Collectors.toList());
+        List<Player> tournamentPlayers = new LinkedList<>();
+        for (PlayersTournamentsRelation ptRelation : relationsByTour) {
+            Player player = ptRelation.getPlayer();
+            player.setPoints(ptRelation.getPoints());
+            tournamentPlayers.add(player);
+        }
+        return tournamentPlayers.stream().sorted(Comparator.comparingInt(Player::getPoints).reversed()).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Player> getTopPlayers() {
+        List<Player> allPlayers = userService.getAllPlayers();
+        for (Player player : allPlayers) {
+            List<PlayersTournamentsRelation> ptRelations = ptRelationRepository.findPlayersTournamentsRelationsByPlayer(player);
+            int points = 0;
+            for (PlayersTournamentsRelation relation : ptRelations) {
+                points += relation.getPoints();
+            }
+            player.setPoints(points);
+        }
+        return allPlayers.stream().sorted(Comparator.comparingInt(Player::getPoints).reversed()).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Solution> getTournamentSolutions(Long tournamentId) {
+        return solutionRepository.findAllByTournament(tournamentRepository.getById(tournamentId));
     }
 
     @Override
@@ -175,6 +210,12 @@ public class TournamentServiceImpl implements TournamentService {
                 .stream()
                 .map(PlayersTournamentsRelation::getTournament)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Player getPlayerByUserName(String playerName) {
+        User user = userService.getUserByUsername(playerName).get();
+        return userService.getPlayerByUser(user);
     }
 
     @Override
@@ -197,4 +238,14 @@ public class TournamentServiceImpl implements TournamentService {
         List<Player> playersByTournament = getPlayersByTournament(tournamentRepository.getById(tournamentId));
         return playersByTournament.stream().map(Player::getAccount).collect(Collectors.toList());
     }
+
+    @Override
+    public void savePlayerTournamentPoints(Long playerId, Long tournamentId, int winsCount) {
+        Tournament tournament = tournamentRepository.getById(tournamentId);
+        Player player = playerRepository.getById(playerId);
+        PlayersTournamentsRelation ptRelation = ptRelationRepository.findByTournamentAndPlayer(tournament, player);
+        ptRelation.setPoints(winsCount);
+        ptRelationRepository.save(ptRelation);
+    }
+
 }

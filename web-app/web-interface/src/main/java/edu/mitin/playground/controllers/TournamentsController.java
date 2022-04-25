@@ -11,6 +11,8 @@ import edu.mitin.playground.results.entity.Round;
 import edu.mitin.playground.results.entity.RoundStep;
 import edu.mitin.playground.tournaments.TournamentService;
 import edu.mitin.playground.tournaments.entity.Tournament;
+import edu.mitin.playground.tournaments.entity.model.SecretKey;
+import edu.mitin.playground.tournaments.entity.model.TournamentStatus;
 import edu.mitin.playground.users.UserService;
 import edu.mitin.playground.users.entity.Permission;
 import edu.mitin.playground.users.entity.Player;
@@ -39,22 +41,26 @@ public class TournamentsController {
     private final UserService userService;
     private final GameService gameService;
     private final ResultsStorages resultsStorages;
+    private final ApiRequests requests;
 
     @Autowired
-    public TournamentsController(TournamentService tournamentService, UserService userService, GameService gameService, ResultsStorages resultsStorages) {
+    public TournamentsController(TournamentService tournamentService, UserService userService, GameService gameService, ResultsStorages resultsStorages, ApiRequests requests) {
         this.tournamentService = tournamentService;
         this.userService = userService;
         this.gameService = gameService;
         this.resultsStorages = resultsStorages;
+        this.requests = requests;
     }
 
     @GetMapping("")
     public String tournamentPage(Model model, @RequestParam(value = "searchParam", required = false) String searchParam) {
         model.addAttribute("isOrganizer", hasCurrentUserPermission(Permission.ORGANIZER_PROFILE));
         if (searchParam != null) {
-            model.addAttribute("search", tournamentService.getByPartTournamentName(searchParam));
+            List<Tournament> tournamentsBySearch = tournamentService.getByPartTournamentName(searchParam);
+            model.addAttribute("search", tournamentsBySearch.size() > 10 ? tournamentsBySearch.subList(0, 10) : tournamentsBySearch);
         }
-        model.addAttribute("allTours", tournamentService.getAllTournaments());
+        List<Tournament> firstTenTournaments = tournamentService.getAllTournaments();
+        model.addAttribute("allTours", firstTenTournaments.size() > 10 ? firstTenTournaments.subList(0, 10) : firstTenTournaments);
         return "tournaments/tournaments";
     }
 
@@ -86,6 +92,10 @@ public class TournamentsController {
             tournament.setOwner(ownerAccount);
             tournament.setGame(game);
             tournament.setPlayersCount(0);
+            tournament.setStatus(TournamentStatus.OPEN.name());
+            if (tournament.getSecretKey().isBlank()) {
+                tournament.setSecretKey(null);
+            }
             Long tournamentId = tournamentService.registerTournament(tournament);
             return "redirect:/tournaments/tournament/" + tournamentId;
         }
@@ -105,10 +115,13 @@ public class TournamentsController {
             List<Player> playersByTournament = tournamentService.getPlayersByTournament(tournament);
             model.addAttribute("tournament", tournament);
             model.addAttribute("isPlayer", isThePlayerOfTheTournament(tournament));
+            model.addAttribute("hasSolution", hasPlayerSolution(tournament));
             model.addAttribute("isOrganizer", hasCurrentUserPermission(Permission.ORGANIZER_PROFILE));
             model.addAttribute("tournamentId", new Tournament());
             model.addAttribute("players", playersByTournament);
             model.addAttribute("owner", owner);
+            boolean isReadyTournament =  tournament.getStatus().equals(TournamentStatus.OPEN.name()) && tournament.getPlayersCount() > 1;
+            model.addAttribute("isReadyTournament", isReadyTournament);
             return "tournaments/Tournament";
         }
         return "errors/notFound";
@@ -129,7 +142,7 @@ public class TournamentsController {
             model.addAttribute("languages", gameLanguages);
             model.addAttribute("tournament", tournament);
             model.addAttribute("solution", new Solution("", "", "", "", 0L));
-            if (isThePlayerOfTheTournament(tournament)) {
+            if (isThePlayerOfTheTournament(tournament) && !hasPlayerSolution(tournament)) {
                 return "tournaments/solutions/gameSolution";
             } else {
                 return "errors/noAccess";
@@ -141,8 +154,17 @@ public class TournamentsController {
     @PostMapping("/sendSolution")
     public String sendPlayerSolutionPage(Solution solution, Model model) {
         final String jsonSolution = createSolutionJson(solution);
+        Optional<Tournament> tournamentById = tournamentService.getTournamentById(solution.getTournamentId());
+        if (tournamentById.isPresent()) {
+            Tournament tournament = tournamentById.get();
+            if (!isThePlayerOfTheTournament(tournament) || hasPlayerSolution(tournament)) {
+                return "errors/noAccess";
+            }
+        } else {
+            return "errors/notFound";
+        }
         try {
-            final String responseBody = new ApiRequests().sendPost(ApiRequests.ActionRequestBody.VERIFY, jsonSolution);
+            final String responseBody = requests.sendPost(ApiRequests.ActionRequestBody.VERIFY, jsonSolution);
             final Response response = new Gson().fromJson(responseBody, Response.class);
             var resultMsg = response.isSuccess() ? "Успешно" : "Программа не прошла проверку";
             model.addAttribute("result", "Результат: " + resultMsg);
@@ -158,8 +180,8 @@ public class TournamentsController {
         }
     }
 
-    @PostMapping("tournament/{id}/register")
-    public String registerToTournament(@PathVariable String id, Model model) {
+    @GetMapping("tournament/{id}/register")
+    public String registerToTournamentPage(@PathVariable String id, Model model) {
         if (!isCorrectId(id)) {
             return "errors/notFound";
         }
@@ -170,10 +192,49 @@ public class TournamentsController {
             if (isThePlayerOfTheTournament(tournament)) {
                 return "errors/notFound";
             }
+            if (tournament.getSecretKey() != null) {
+                User owner = tournament.getOwner();
+                List<Player> playersByTournament = tournamentService.getPlayersByTournament(tournament);
+                model.addAttribute("players", playersByTournament);
+                model.addAttribute("owner", owner);
+                model.addAttribute("id", id);
+                model.addAttribute("secret", new SecretKey());
+                return "tournaments/registerTournament";
+            }
             User user = getCurrentUser().get();
             if (tournamentService.registerPlayerToTournament(tournament, user)) {
                 return "redirect:/tournaments/tournament/" + tournament.getId().toString();
             }
+        }
+        return "errors/notFound";
+    }
+
+    @PostMapping("tournament/{id}/register")
+    public String registerToTournament(@PathVariable String id, SecretKey secretKey, Model model) {
+        if (!isCorrectId(id)) {
+            return "errors/notFound";
+        }
+        long idTour = Long.parseLong(id);
+        Optional<Tournament> tournamentById = tournamentService.getTournamentById(idTour);
+        if (tournamentById.isPresent()) {
+            Tournament tournament = tournamentById.get();
+            if (isThePlayerOfTheTournament(tournament)) {
+                return "errors/notFound";
+            }
+            if (tournament.getSecretKey().equals(secretKey.getSecretKey())) {
+                User user = getCurrentUser().get();
+                if (tournamentService.registerPlayerToTournament(tournament, user)) {
+                    return "redirect:/tournaments/tournament/" + tournament.getId().toString();
+                }
+            }
+            model.addAttribute(ERROR_ATTRIBUTE_NAME, "Неверный ключ");
+            User owner = tournament.getOwner();
+            List<Player> playersByTournament = tournamentService.getPlayersByTournament(tournament);
+            model.addAttribute("players", playersByTournament);
+            model.addAttribute("owner", owner);
+            model.addAttribute("id", id);
+            model.addAttribute("secret", new SecretKey());
+            return "tournaments/registerTournament";
         }
         return "errors/notFound";
     }
@@ -190,9 +251,10 @@ public class TournamentsController {
             return "errors/noAccess";
         }
         try {
-            String responseBody = new ApiRequests().sendPostRequestParams(ApiRequests.ActionRequestParams.START_TOURNAMENT, List.of(id));
+            String responseBody = requests.sendPostRequestParams(ApiRequests.ActionRequestParams.START_TOURNAMENT, List.of(id));
             final Response response = new Gson().fromJson(responseBody, Response.class);
             if (response.isSuccess()) {
+                tournamentService.setTournamentStatus(idTour, TournamentStatus.IN_PROCESS);
                 return "redirect:/tournaments/tournament/" + id + "/results";
             } else {
                 model.addAttribute(ERROR_ATTRIBUTE_NAME, response.getDescription());
@@ -219,11 +281,7 @@ public class TournamentsController {
             model.addAttribute(ERROR_ATTRIBUTE_NAME, "Турнир завершен с ошибкой, посмотреть результаты можно в отчете");
             return "tournaments/results";
         }
-        if (resultsStorages.isAllGamesPlayed(tournament.getId())) {
-            model.addAttribute("status", "Турнир завершен");
-        } else {
-            model.addAttribute("status", "Турнир в процессе");
-        }
+        model.addAttribute("status", TournamentStatus.valueOf(tournament.getStatus()).getStatus());
         List<TournamentTableRow> tournamentTable = resultsStorages.createSortedTournamentTable(idTour);
         model.addAttribute("table", tournamentTable);
         return "tournaments/results";
@@ -271,7 +329,12 @@ public class TournamentsController {
             return "errors/notFound";
         }
         List<RoundStep> roundSteps = resultsStorages.getSortedRoundSteps(id, round.getHostName(), round.getGuestName());
-        model.addAttribute("round", round.getHostName() + " vs " + round.getGuestName());
+        List<String> hostGoal = List.of(round.getHostGoal().split("\n"));
+        List<String> guestGoal = List.of(round.getHostGoal().split("\n"));
+        model.addAttribute("round", round);
+        model.addAttribute("roundName", round.getHostName() + " vs " + round.getGuestName());
+        model.addAttribute("hostGoal", hostGoal);
+        model.addAttribute("guestGoal", guestGoal);
         model.addAttribute("winner", "Победитель: " + round.getWinner());
         model.addAttribute("steps", roundSteps);
         return "tournaments/round";
@@ -307,5 +370,10 @@ public class TournamentsController {
         return currentUser.filter(user -> tournamentService.getPlayersByTournament(tournament)
                 .stream()
                 .anyMatch(player -> player.getAccount().getId().equals(user.getId()))).isPresent();
+    }
+
+    private boolean hasPlayerSolution(Tournament tournament) {
+        User currentUser = getCurrentUser().get();
+        return tournamentService.getTournamentSolutions(tournament.getId()).stream().anyMatch(solution -> solution.getPlayerName().equals(currentUser.getUsername()));
     }
 }

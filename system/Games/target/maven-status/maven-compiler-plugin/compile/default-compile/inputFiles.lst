@@ -1,5 +1,7 @@
+D:\University\Diploma\Geek-Playgraund\system\Games\src\main\java\edu\mitin\games\battleship\game\BattleShipGame.java
 D:\University\Diploma\Geek-Playgraund\system\Games\src\main\java\edu\mitin\games\service\model\ResultOfGame.java
 D:\University\Diploma\Geek-Playgraund\system\Games\src\main\java\edu\mitin\games\service\provider\exceptions\GameProviderException.java
+D:\University\Diploma\Geek-Playgraund\system\Games\src\main\java\edu\mitin\games\providers\IndependentGamesProvider.java
 D:\University\Diploma\Geek-Playgraund\system\Games\src\main\java\edu\mitin\games\service\model\Language.java
 D:\University\Diploma\Geek-Playgraund\system\Games\src\main\java\edu\mitin\games\randomizeGame\game\RandomizeGame.java
 D:\University\Diploma\Geek-Playgraund\system\Games\src\main\java\edu\mitin\games\service\model\Player.java
@@ -7,4 +9,3 @@ D:\University\Diploma\Geek-Playgraund\system\Games\src\main\java\edu\mitin\games
 D:\University\Diploma\Geek-Playgraund\system\Games\src\main\java\edu\mitin\games\service\factory\GameFactory.java
 D:\University\Diploma\Geek-Playgraund\system\Games\src\main\java\edu\mitin\games\service\model\Failure.java
 D:\University\Diploma\Geek-Playgraund\system\Games\src\main\java\edu\mitin\games\service\Game.java
-D:\University\Diploma\Geek-Playgraund\system\Games\src\main\java\edu\mitin\games\randomizeGame\provider\RandomizeGameProvider.java

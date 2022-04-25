@@ -10,6 +10,9 @@ public class ResultOfGame {
     private String leftPlayerName;
     private String rightPlayerName;
 
+    private String leftPlayerGoal;
+    private String rightPlayerGoal;
+
     private Failure failure;
 
 
@@ -46,6 +49,22 @@ public class ResultOfGame {
         this.rightPlayerName = rightPlayer;
         this.leftPlayerSteps = leftPlayerSteps;
         this.rightPlayerSteps = rightPlayerSteps;
+    }
+
+    public String getLeftPlayerGoal() {
+        return leftPlayerGoal;
+    }
+
+    public void setLeftPlayerGoal(String leftPlayerGoal) {
+        this.leftPlayerGoal = leftPlayerGoal;
+    }
+
+    public String getRightPlayerGoal() {
+        return rightPlayerGoal;
+    }
+
+    public void setRightPlayerGoal(String rightPlayerGoal) {
+        this.rightPlayerGoal = rightPlayerGoal;
     }
 
     public ResultOfGame(String leftPlayer, String rightPlayer) {

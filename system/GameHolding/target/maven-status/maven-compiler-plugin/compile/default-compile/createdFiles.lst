@@ -10,5 +10,6 @@ edu\mitin\storage\entity\Game.class
 edu\mitin\storage\entity\Round.class
 edu\mitin\storage\repository\RoundStepRepository.class
 edu\mitin\storage\repository\GameRepository.class
+edu\mitin\storage\entity\model\TournamentStatus.class
 edu\mitin\storage\entity\Tournament.class
 edu\mitin\storage\repository\FailureRepository.class

@@ -8,7 +8,7 @@ public abstract class Game {
     protected ResultOfGame gameResult;
 
     public Game(String leftPlayerName, String rightPlayerName) {
-        registerPlayers(leftPlayerName, rightPlayerName);
+        this.gameResult = new ResultOfGame(leftPlayerName, rightPlayerName);
     }
 
     public Game() {
@@ -17,7 +17,7 @@ public abstract class Game {
     public void registerPlayers(String leftPlayerName, String rightPlayerName) {
         this.leftPlayerName = leftPlayerName;
         this.rightPlayerName = rightPlayerName;
-        this.gameResult = new ResultOfGame(leftPlayerName, rightPlayerName);
+
     }
 
     public ResultOfGame getResultOfGame(){

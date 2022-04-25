@@ -1,6 +1,7 @@
 package edu.mitin.playground.communicate;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,12 +10,15 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 
+@Component
 public class ApiRequests {
 
     private final static HttpClient CLIENT = HttpClient.newHttpClient();
 
-    private String host = "http://localhost";
-    private String port = "9000";
+    @Value("${system.host}")
+    private String host;
+    @Value("${system.port}")
+    private String port;
     private String apiContext = "api/v1/";
 
     public enum ActionRequestBody {

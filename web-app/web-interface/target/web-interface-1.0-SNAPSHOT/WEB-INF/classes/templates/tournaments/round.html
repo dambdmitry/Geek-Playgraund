@@ -59,8 +59,18 @@
         <div class="col side">
         </div>
         <div class="col-8 mid fluid">
-            <h2 align="center" th:text="${round}"></h2>
+            <h2 align="center" th:text="${roundName}"></h2>
             <h4 align="center" th:text="${winner}"></h4>
+            <div class="row">
+                <div class="col ">
+                    <h5 align="center" th:text="${round.hostName}"></h5><br>
+                    <p align="center" th:each="goal: ${hostGoal}" th:text="${goal}"></p>
+                </div>
+                <div class="col">
+                    <h5 align="center" th:text="${round.guestName}"></h5><br>
+                    <p align="center" th:each="goal: ${guestGoal}" th:text="${goal}"></p>
+                </div>
+            </div>
             <div class="col idents users">
                 <h5 align="center">Ход игры</h5>
                 <table class="table table-hover">

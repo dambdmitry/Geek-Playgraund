@@ -35,7 +35,7 @@ public class MainController {
         //TODO сделать сортировку чтоб выводить только топ
 
         List<Tournament> tournaments = tournamentService.getAllTournaments();
-        List<Player> topPlayes = userService.getAllPlayers();
+        List<Player> topPlayes = tournamentService.getTopPlayers();
         model.addAttribute("tournaments", tournaments);
         model.addAttribute("topUsers", topPlayes);
         return "index";

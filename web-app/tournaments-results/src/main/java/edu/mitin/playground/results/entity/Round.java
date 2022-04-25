@@ -22,6 +22,20 @@ public class Round {
     @OneToOne
     private Failure failure;
 
+    @Column(columnDefinition = "TEXT")
+    private String hostGoal;
+
+    @Column(columnDefinition = "TEXT")
+    private String guestGoal;
+
+    public String getHostGoal() {
+        return hostGoal;
+    }
+
+    public String getGuestGoal() {
+        return guestGoal;
+    }
+
     public Failure getFailure() {
         return failure;
     }

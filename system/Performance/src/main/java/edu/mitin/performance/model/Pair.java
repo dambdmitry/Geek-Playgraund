@@ -14,6 +14,15 @@ public class Pair {
         rightPoints = 0;
     }
 
+    public Integer getPlayerPoints(String playerName) {
+        if (leftPlayer.getPlayerName().equals(playerName)) {
+            return leftPoints;
+        } else if (rightPlayer.getPlayerName().equals(playerName)) {
+            return rightPoints;
+        }
+        else return 0;
+    }
+
     public Integer getLeftPoints() {
         return leftPoints;
     }

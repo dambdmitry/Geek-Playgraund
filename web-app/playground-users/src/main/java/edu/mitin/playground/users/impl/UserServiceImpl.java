@@ -93,6 +93,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Player getPlayerByUser(User user) {
+        return playerRepository.findByAccount(user).get();
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {

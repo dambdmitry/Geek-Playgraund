@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  */
 public abstract class GameProvider {
     //Игра в которую играют процессы
-    protected Game game;
+    private Game game;
 
     //Инстансы игроков, left и right - условные их названия.
     protected Player leftPlayer;
@@ -160,6 +160,34 @@ public abstract class GameProvider {
     protected boolean isHanged(Integer seconds) {
         long milliSeconds = seconds * 1000;
         return System.currentTimeMillis() - startTime > milliSeconds;
+    }
+
+    protected boolean isInvalidActions(String leftPlayerAction, String rightPlayerAction) {
+        return !game.isCorrectAction(leftPlayerAction) || !game.isCorrectAction(rightPlayerAction);
+    }
+
+    protected ResultOfGame getInvalidActionResult(String leftPlayerAction, String rightPlayerAction) {
+        String author = !game.isCorrectAction(leftPlayerAction) ? leftPlayer.getName() : rightPlayer.getName();
+        String action = !game.isCorrectAction(leftPlayerAction) ? leftPlayerAction : rightPlayerAction;
+        final String message = "Некорректное действие " + action;
+        System.out.println(message);
+        return getFailedResultOfGame(new GameProviderException(message, author));
+    }
+
+    protected ResultOfGame getFineGameResult() {
+        return game.getResultOfGame();
+    }
+
+    protected boolean hasWinAction(String leftPlayerAction, String rightPlayerAction) {
+        return game.isWinLeftPlayerAction(leftPlayerAction) || game.isWinRightPlayerAction(rightPlayerAction);
+    }
+
+    protected String executeLeftPlayerAction(String action) {
+        return game.executeLeftPlayerAction(action);
+    }
+
+    protected String executeRightPlayerAction(String action) {
+        return game.executeRightPlayerAction(action);
     }
 
     private String readPlayerFile(File playerFile) {

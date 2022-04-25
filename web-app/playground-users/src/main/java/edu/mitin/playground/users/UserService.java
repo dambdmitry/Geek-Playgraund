@@ -23,4 +23,6 @@ public interface UserService extends UserDetailsService {
 
     List<Player> getAllPlayers();
 
+    Player getPlayerByUser(User user);
+
 }

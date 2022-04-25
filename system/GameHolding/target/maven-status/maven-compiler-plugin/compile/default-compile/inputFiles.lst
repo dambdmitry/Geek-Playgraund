@@ -2,6 +2,7 @@ D:\University\Diploma\Geek-Playgraund\system\GameHolding\src\main\java\edu\mitin
 D:\University\Diploma\Geek-Playgraund\system\GameHolding\src\main\java\edu\mitin\storage\entity\Game.java
 D:\University\Diploma\Geek-Playgraund\system\GameHolding\src\main\java\edu\mitin\storage\repository\RoundRepository.java
 D:\University\Diploma\Geek-Playgraund\system\GameHolding\src\main\java\edu\mitin\storage\TournamentStorage.java
+D:\University\Diploma\Geek-Playgraund\system\GameHolding\src\main\java\edu\mitin\storage\entity\model\TournamentStatus.java
 D:\University\Diploma\Geek-Playgraund\system\GameHolding\src\main\java\edu\mitin\storage\entity\Round.java
 D:\University\Diploma\Geek-Playgraund\system\GameHolding\src\main\java\edu\mitin\storage\entity\Failure.java
 D:\University\Diploma\Geek-Playgraund\system\GameHolding\src\main\java\edu\mitin\storage\repository\GameRepository.java

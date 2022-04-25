@@ -62,7 +62,7 @@
         </div>
         <div class="col-8 mid fluid">
 
-            <div th:if="${isPlayer}">
+            <div th:if="${isPlayer} and ${!hasSolution}">
                 <div class=" row justify-content-center">
                     <form class="form-inline my-2 my-lg-0" th:action="@{/tournaments/tournament/{id}/solution(id=${tournament.id})}" method="get">
                         <input class="btn btn-outline-primary my-2 my-sm-0" type="submit" value="Отправить решение"/>
@@ -71,17 +71,18 @@
             </div>
             <div th:if="${!isPlayer}">
                 <div class=" row justify-content-center">
-                    <form class="form-inline my-2 my-lg-0" th:action="@{/tournaments/tournament/{id}/register(id=${tournament.id})}" method="post">
+                    <form class="form-inline my-2 my-lg-0" th:action="@{/tournaments/tournament/{id}/register(id=${tournament.id})}" method="get">
                         <input class="btn btn-outline-primary my-2 my-sm-0" type="submit" value="Стать участником турнира"/>
                     </form>
                 </div>
             </div>
+            <div class=" row justify-content-center" th:if="${isOrganizer} and ${isReadyTournament}">
+                <form th:action="@{/tournaments/start/{id}(id=${tournament.id})}" method="post">
+                    <input class="btn btn-outline-primary my-2 my-sm-0" type="submit" value="Начать турнир"/>
+                </form>
+            </div>
         </div>
-        <div th:if="${isOrganizer}">
-            <form th:action="@{/tournaments/start/{id}(id=${tournament.id})}" method="post">
-                <input class="btn btn-outline-primary my-2 my-sm-0" type="submit" value="Начать турнир"/>
-            </form>
-        </div>
+
         <div class="col side">
             <div class="col idents users">
                 <h5 align="center">Игроки турнира</h5>

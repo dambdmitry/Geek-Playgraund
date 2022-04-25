@@ -4,6 +4,7 @@ import edu.mitin.storage.entity.Failure;
 import edu.mitin.storage.entity.Game;
 import edu.mitin.storage.entity.Solution;
 import edu.mitin.storage.entity.Tournament;
+import edu.mitin.storage.entity.model.TournamentStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface TournamentStorage {
 
     List<Solution> getSolutionsByTournament(Long tournamentId);
 
-    Long saveRound(Long tournamentId, String hostPlayerName, String guestPlayerName, String winnerName);
+    Long saveRound(Long tournamentId, String hostPlayerName, String guestPlayerName, String winnerName, String hostGoal, String guestGoal);
 
     Long saveFailedRound(Long tournamentId, String leftPlayerName, String rightPlayerName, String author, String description);
 
@@ -27,4 +28,7 @@ public interface TournamentStorage {
 
     Boolean isPresentTournament(Long tournamentId);
 
+    void setTournamentStatus(Long tournamentId, TournamentStatus status);
+
+    void updatePlayerPoints(String playerName, Integer points);
 }

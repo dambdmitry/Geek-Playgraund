@@ -11,4 +11,6 @@ public interface PlayersTournamentsRelationRepository extends JpaRepository<Play
     List<PlayersTournamentsRelation> findPlayersTournamentsRelationsByTournament(Tournament tournament);
 
     List<PlayersTournamentsRelation> findPlayersTournamentsRelationsByPlayer(Player player);
+
+    PlayersTournamentsRelation findByTournamentAndPlayer(Tournament tournament, Player player);
 }

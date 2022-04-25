@@ -23,22 +23,34 @@ public class Tournament {
 
     private String name;
     private Integer playersCount;
+    private String status;
+    private String secretKey;
 
 
-    public Tournament(User owner, String name, Integer playersCount) {
+    public Tournament(User owner, String name, Integer playersCount, String status) {
         this.owner = owner;
         this.name = name;
         this.playersCount = playersCount;
+        this.status = status;
     }
 
-    public Tournament(User owner, Game game, String name) {
+    public Tournament(User owner, Game game, String name, String status) {
         this.owner = owner;
         this.game = game;
         this.name = name;
+        this.status = status;
     }
 
     public Tournament() {
 
+    }
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
     }
 
     public Game getGame() {
@@ -79,5 +91,13 @@ public class Tournament {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

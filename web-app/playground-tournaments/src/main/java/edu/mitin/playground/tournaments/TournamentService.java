@@ -1,6 +1,8 @@
 package edu.mitin.playground.tournaments;
 
+import edu.mitin.playground.tournaments.entity.Solution;
 import edu.mitin.playground.tournaments.entity.Tournament;
+import edu.mitin.playground.tournaments.entity.model.TournamentStatus;
 import edu.mitin.playground.users.entity.Player;
 import edu.mitin.playground.users.entity.User;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ public interface TournamentService {
      */
     Long registerTournament(Tournament tournament);
 
+    void setTournamentStatus(Long tournamentId, TournamentStatus status);
+
     boolean registerPlayerToTournament(Tournament tournament, User user);
 
     Optional<Tournament> getTournamentById(Long id);
@@ -30,6 +34,8 @@ public interface TournamentService {
 
     List<Tournament> getTournamentsByPlayer(Player player);
 
+    Player getPlayerByUserName(String playerName);
+
     Iterable<Tournament> getByTournamentName(String tournamentName);
 
     List<Tournament> getAllTournaments();
@@ -37,4 +43,10 @@ public interface TournamentService {
     List<Tournament> getByPartTournamentName(String partName);
 
     List<User> getAccountsByTournament(Long tournamentId);
+
+    void savePlayerTournamentPoints(Long playerId, Long tournamentId, int winsCount);
+
+    List<Player> getTopPlayers();
+
+    List<Solution> getTournamentSolutions(Long tournamentId);
 }

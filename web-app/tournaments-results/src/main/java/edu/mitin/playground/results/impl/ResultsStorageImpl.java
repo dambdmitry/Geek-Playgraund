@@ -3,6 +3,7 @@ package edu.mitin.playground.results.impl;
 import edu.mitin.playground.results.entity.RoundStep;
 import edu.mitin.playground.tournaments.TournamentService;
 import edu.mitin.playground.tournaments.entity.Tournament;
+import edu.mitin.playground.users.entity.Player;
 import edu.mitin.playground.users.entity.User;
 import edu.mitin.playground.results.ResultsStorages;
 import edu.mitin.playground.results.entity.Round;
@@ -129,6 +130,11 @@ public class ResultsStorageImpl implements ResultsStorages {
         tournamentTableRow.setWinsCount(winsCount);
         tournamentTableRow.setLosesCount(rounds.size() - winsCount);
         tournamentTableRow.setPoints(winsCount); // победа - 1 очко
+        Player playerByUserName = tournamentService.getPlayerByUserName(username);
+        if (!rounds.isEmpty()){
+            Tournament tournament = rounds.get(0).getTournament();
+            tournamentService.savePlayerTournamentPoints(playerByUserName.getId(), tournament.getId(), winsCount);
+        }
         return tournamentTableRow;
     }
 }

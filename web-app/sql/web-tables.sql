@@ -24,13 +24,15 @@ CREATE TABLE IF NOT EXISTS program_template
         REFERENCES game_interface (id)
 );
 
-CREATE TABLE IF NOT EXISTS tournament_interface
+CREATE TABLE IF NOT EXISTS tournament
 (
     id            SERIAL PRIMARY KEY,
     name          VARCHAR(50) NOT NULL,
     players_count INT         NOT NULL,
     game_id       INT         NOT NULL,
     owner_id      INT         NOT NULL,
+    status        VARCHAR(10) NOT NULL,
+    secret_key    VARCHAR(10),
     FOREIGN KEY (game_id)
         REFERENCES game_interface (id),
     FOREIGN KEY (owner_id)
@@ -51,10 +53,11 @@ CREATE TABLE IF NOT EXISTS players_tournaments_relation
     id            SERIAL PRIMARY KEY,
     player_id     INT NOT NULL,
     tournament_id INT NOT NULL,
+    points        INT NOT NULL,
     FOREIGN KEY (player_id)
         REFERENCES player (id),
     FOREIGN KEY (tournament_id)
-        REFERENCES tournament_interface (id)
+        REFERENCES tournament (id)
 );
 
 CREATE TABLE IF NOT EXISTS organizer_request
