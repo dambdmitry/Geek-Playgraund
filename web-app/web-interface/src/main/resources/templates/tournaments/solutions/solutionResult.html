@@ -22,16 +22,16 @@
     <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto">
             <li class="link-nav">
-                <a class="link" th:href="@{/templates/tournaments}">Турниры</a>
+                <a class="link" th:href="@{/tournaments}">Турниры</a>
             </li>
             <li class="link-nav">
-                <a class="link" th:href="@{/templates/player}">Игрокам</a>
+                <a class="link" th:href="@{/player}">Игрокам</a>
             </li>
             <li class="link-nav">
-                <a class="link" th:href="@{/templates/organizer}">Организаторам</a>
+                <a class="link" th:href="@{/organizer}">Организаторам</a>
             </li>
             <li class="link-nav">
-                <a class="link" th:href="@{/templates/user}">Мой профиль</a>
+                <a class="link" th:href="@{/user}">Мой профиль</a>
             </li>
         </ul>
 
@@ -61,7 +61,9 @@
         <div class="col-10 mid fluid">
             <div class="row">
                 <h3 align="center" th:text="${result}"></h3>
+                <br>
                 <p th:text="${error}"></p>
+                <br>
                 <div th:if="${failure}">
                     <form th:action="@{/tournaments/tournament/{id}/solution(id=${tournament})}" method="get">
                         <input class="btn btn-primary" type="submit" value="Отправить решение повторно"/>

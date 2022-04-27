@@ -8,9 +8,12 @@
 <link rel="stylesheet" th:href="@{/css/security/hiddenByAnonymous.css}">
 <link rel="stylesheet" th:href="@{/css/security/hiddenByAuthed.css}">
 <link rel="stylesheet" th:href="@{/css/navbar.css}">
+<link rel="stylesheet" th:href="@{/css/organizerPage.css}">
+<!--<link rel="stylesheet" href="../static/css/organizerPage.css" th:href="@{/css/organizerPage.css}">-->
+<!--<link rel="stylesheet" href="../static/css/navbar.css" th:href="@{/css/navbar.css}">-->
 <head>
   <meta charset="UTF-8">
-  <title>Информация для юзеров</title>
+  <title>Информация для игроков</title>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light nav-bg border border-dark">
@@ -50,6 +53,54 @@
     </form>
   </div>
 </nav>
-тут будет информация и правила как участвовать в турнирах
+
+<div class="container-fluid">
+  <div style="min-height: 100vh" class="row">
+    <div class="col side">
+    </div>
+    <div class="col-6 mid fluid">
+      <h4 align="center">Как стать игроком турнира?</h4>
+
+      <p>
+        Для того, чтобы принять участие в турнире требуется выбрать турнир со статусом "OPEN" и нажать на кнопку "Стать учасстником турнира".
+        Если турнир приватный, то нужно будет ввести секретный ключ.
+
+        <br><br>
+      <h4 align="center">Как отправлять решения?</h4>
+      После успешной регистрации на турнир на странице турнира появится кнопка "Отправить решение".
+        Далее будет переход на страницу с правилами игры турнира и окно для ввода кода программы.
+        Также есть список с выбором языка программирования.
+        Для каждого языка подготовлен шаблон кода, которого нужно придерживаться.
+        Рекомендуется писать и отлаживать свой код в вашей любимой IDE.
+        При отправке ваш код тестируется системой.
+        Если он содержит синтаксические или логические ошибки в контексте игры, то ошибка выведется на страницу и будет предложено отправить решение повторно,
+        в ином случае вы увидите надпись, что все успешно и ваше решение сохранено. Далее нужно только ожидать начала турнира.
+      </p>
+
+      <br><br>
+
+      <h4 align="center">Доступные языки программирования</h4>
+
+      <p>
+        <b>JAVA</b> - java 11<br>
+        <b>PYTHON</b> - python 3.9.5 <br>
+        <b>PASCAL</b> - PascalABC.NET v3.8.3.3104 <br>
+        <b>C</b> - C gcc 10.3.0 <br>
+        <b>CPP</b> - C++ g++ 10.3.0 <br>
+        <b>PHP</b> - PHP 8.1.5 <br>
+
+        <br>
+      </p>
+
+      <div class=" row justify-content-center">
+        <form class="form-inline my-2 my-lg-0" th:action="@{/tournaments}" method="get">
+          <input class="btn btn-outline-primary my-2 my-sm-0" type="submit" value="Турниры"/>
+        </form>
+      </div>
+    </div>
+    <div class="col side">
+    </div>
+  </div>
+</div>
 </body>
 </html>

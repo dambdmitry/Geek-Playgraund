@@ -99,7 +99,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="player, iStat : ${topUsers}" th:onclick="'window.location.href = \'' + @{/users/{username}(username=${player.account.username})} + '\''" >
+                <tr th:each="player, iStat : ${topUsers}" th:onclick="'window.location.href = \'' + @{/user/{username}(username=${player.account.username})} + '\''" >
                     <td th:text="${iStat.index+1}"/>
                     <td th:text="${player.account.username}"/>
                     <td th:text="${player.points}"/>

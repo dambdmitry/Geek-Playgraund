@@ -1,6 +1,0 @@
-edu\mitin\Application.class
-edu\mitin\rest\TournamentController.class
-edu\mitin\games\service\model\TournamentResult.class
-edu\mitin\rest\VerificationController.class
-edu\mitin\rest\TestController.class
-edu\mitin\games\service\model\Response.class

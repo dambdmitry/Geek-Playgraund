@@ -26,22 +26,6 @@ public class AdminServiceImpl implements AdminService {
         this.requestRepository = requestRepository;
         this.userRepository = userRepository;
         this.s = s;
-        mockRequests();
-        mockOrganizer();
-    }
-
-    void mockOrganizer(){
-        Optional<User> ilonMask = userRepository.findByUsername("IlonMask");
-        User mockOrganizer = ilonMask.get();
-        mockOrganizer.setRole(Role.ORGANIZER);
-        userRepository.save(mockOrganizer);
-    }
-
-    void mockRequests() {
-        List<User> all = userRepository.findAll();
-        for (User user : all) {
-            requestRepository.save(new OrganizerRequest(user, user.getUsername() + user.getPassword()));
-        }
     }
 
     @Override

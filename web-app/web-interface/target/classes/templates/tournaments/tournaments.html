@@ -109,8 +109,8 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr th:each="tour : ${allTours}" th:onclick="'window.location.href = \'' + @{/tournaments/tournament/{id}(id=${tour.id})} + '\''" >
-                                    <td th:text="${tour.id}"/>
+                                <tr th:each="tour, iStat : ${allTours}" th:onclick="'window.location.href = \'' + @{/tournaments/tournament/{id}(id=${tour.id})} + '\''" >
+                                    <td th:text="${iStat.index+1}"/>
                                     <td th:text="${tour.name}"/>
                                     <td th:text="${tour.playersCount}"/>
                                     <td th:text="${tour.status}"/>

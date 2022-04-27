@@ -55,30 +55,10 @@
 <div class="container-fluid">
     <div style="min-height: 100vh" class="row">
         <div class="col side">
-            <div th:if="${playerTournaments != null}">
-                <h5 align="center">Участие в турнирах</h5>
-                <table class="table table-hover">
-                    <thead>
-                    <tr>
-                        <th scope="col">№</th>
-                        <th scope="col">Название турнира</th>
-                        <th scope="col">Участников</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="tournament, iStat : ${playerTournaments}" th:onclick="'window.location.href = \'' + @{/tournaments/tournament/{id}(id=${tournament.id})} + '\''" >
-                        <td th:text="${iStat.index+1}"/>
-                        <td th:text="${tournament.name}"/>
-                        <td th:text="${tournament.playersCount}"/>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+
         </div>
         <div class="col-8 mid fluid">
             <h4 align="center" th:text="${user.username}"></h4>
-        </div>
-        <div class="col side">
             <div th:if="${organizedTournaments != null}">
                 <h5 align="center">Созданные турниры</h5>
                 <table class="table table-hover">
@@ -98,6 +78,33 @@
                     </tbody>
                 </table>
             </div>
+            <div th:if="${tournaments != null}">
+                <h5 align="center">Участие в турнирах</h5>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">№</th>
+                        <th scope="col">Название турнира</th>
+                        <th scope="col">Участников</th>
+                        <th scope="col">Очки</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="tournament, iStat : ${tournaments.keySet()}" th:onclick="'window.location.href = \'' + @{/tournaments/tournament/{id}(id=${tournament.id})} + '\''" >
+                        <td th:text="${iStat.index+1}"/>
+                        <td th:text="${tournament.name}"/>
+                        <td th:text="${tournament.playersCount}"/>
+                        <td th:text="${tournaments.get(tournament).toString()}"/>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+
+        <div class="col side">
+
         </div>
     </div>
 

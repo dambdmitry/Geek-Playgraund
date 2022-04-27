@@ -11,9 +11,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -24,6 +27,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private TournamentService tournamentService;
+
+
 
     @GetMapping("")
     public String userPage(Model model) {
@@ -42,11 +47,44 @@ public class UserController {
             if (playerByUserAccount.isPresent()) {
                 Player player = playerByUserAccount.get();
                 List<Tournament> tournamentsByPlayer = tournamentService.getTournamentsByPlayer(player);
-                model.addAttribute("playerPoints", player.getPoints());
-                model.addAttribute("playerTournaments", tournamentsByPlayer);
+                Map<Tournament, Integer> tournamentsAndPlayerPoints = new HashMap<>();
+                for (Tournament tournament : tournamentsByPlayer) {
+                    Integer playerPoints = tournamentService.getPlayersByTournament(tournament).stream().filter(p -> p.getId().equals(player.getId())).map(p -> p.getPoints()).findFirst().get();
+                    tournamentsAndPlayerPoints.put(tournament, playerPoints);
+                }
+                model.addAttribute("tournaments", tournamentsAndPlayerPoints);
             }
         }
         return "user/userController";
+    }
+
+    @GetMapping("/{username}")
+    public String getUserPage(@PathVariable("username") String username, Model model) {
+        Optional<User> userByUsername = userService.getUserByUsername(username);
+        if (userByUsername.isPresent()) {
+            User user = userByUsername.get();
+            model.addAttribute("user", user);
+            if (hasUserPermission(user, Permission.ORGANIZER_PROFILE.getPermission())){
+                List<Tournament> userOrganizedTournaments = tournamentService.getTournamentsByOwner(user.getUsername());
+                model.addAttribute("organizedTournaments", userOrganizedTournaments);
+            }
+            if (hasUserPermission(user, Permission.PLAYER_PROFILE.getPermission())) {
+                Optional<Player> playerByUserAccount = userService.getPlayerByUserAccount(user);
+                if (playerByUserAccount.isPresent()) {
+                    Player player = playerByUserAccount.get();
+                    List<Tournament> tournamentsByPlayer = tournamentService.getTournamentsByPlayer(player);
+                    Map<Tournament, Integer> tournamentsAndPlayerPoints = new HashMap<>();
+                    for (Tournament tournament : tournamentsByPlayer) {
+                        Integer playerPoints = tournamentService.getPlayersByTournament(tournament).stream().filter(p -> p.getId().equals(player.getId())).map(p -> p.getPoints()).findFirst().get();
+                        tournamentsAndPlayerPoints.put(tournament, playerPoints);
+                    }
+                    model.addAttribute("tournaments", tournamentsAndPlayerPoints);
+                }
+            }
+            return "user/userController";
+        } else {
+            return "errors/notFound";
+        }
     }
 
     private Optional<User> getCurrentUser() {

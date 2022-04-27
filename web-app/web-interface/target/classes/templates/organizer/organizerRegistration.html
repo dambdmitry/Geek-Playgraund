@@ -8,6 +8,7 @@
 <link rel="stylesheet" th:href="@{/css/security/hiddenByAnonymous.css}">
 <link rel="stylesheet" th:href="@{/css/security/hiddenByAuthed.css}">
 <link rel="stylesheet" th:href="@{/css/navbar.css}">
+<link rel="stylesheet" th:href="@{/css/organizerPage.css}">
 
 
 <head>
@@ -55,20 +56,26 @@
 
 <div class="container-fluid">
     <div style="min-height: 100vh" class="row">
-        <form th:action="@{/organizer/registration}" th:object="${OrganizerRequest}" method="post">
-            <div class="border sizing-box container justify-content-md-center">
-                <div class="row mb-3">
-                    Запишите обоснование или ключевое слово для заяки
+        <div class="col side">
+        </div>
+        <div class="col-6 mid fluid">
+            <form th:action="@{/organizer/registration}" th:object="${OrganizerRequest}" method="post">
+                <div class="border sizing-box container justify-content-md-center">
+                    <div class="row mb-3">
+                        Запишите обоснование или ключевое слово для заявки
+                    </div>
+                    <div class="row mb-3">
+                        <label for="username">Обоснование </label>
+                        <input class="form-control" type="text" name="username" id="username" th:field="*{justification}"/>
+                    </div>
+                    <div class="row mb-3 justify-content-md-center">
+                        <input class="btn btn-primary" type="submit" value="Отправить заявку"/>
+                    </div>
                 </div>
-                <div class="row mb-3">
-                    <label for="username">Обоснование </label>
-                    <input class="form-control" type="text" name="username" id="username" th:field="*{justification}"/>
-                </div>
-                <div class="row mb-3 justify-content-md-center">
-                    <input class="btn btn-primary" type="submit" value="Отправить заявку"/>
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
+        <div class="col side">
+        </div>
     </div>
 </div>
 </body>

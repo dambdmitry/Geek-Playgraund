@@ -113,6 +113,17 @@ public class TournamentsController {
             Tournament tournament = tournamentById.get();
             User owner = tournament.getOwner();
             List<Player> playersByTournament = tournamentService.getPlayersByTournament(tournament);
+            var tournamentSolutions = tournamentService.getTournamentSolutions(tournament.getId());
+            tournamentSolutions.forEach(solution -> {
+                solution.setCode(solution.getCode().replaceAll("<", "&lt;"));
+                solution.setCode(solution.getCode().replaceAll(">", "&gt;"));
+                solution.setCode(solution.getCode().replaceAll("\"", "&quot;"));
+                solution.setCode(solution.getCode().replaceAll("'", "&#39;"));
+                solution.setCode(solution.getCode().replaceAll(" ", "&nbsp;"));
+                solution.setCode(solution.getCode().replaceAll("\n", "<br>"));
+            });
+            model.addAttribute("gameDescription", tournament.getGame().getDescription().replaceAll("\n", "<br>"));
+            model.addAttribute("solutions", tournamentSolutions);
             model.addAttribute("tournament", tournament);
             model.addAttribute("isPlayer", isThePlayerOfTheTournament(tournament));
             model.addAttribute("hasSolution", hasPlayerSolution(tournament));
@@ -120,8 +131,13 @@ public class TournamentsController {
             model.addAttribute("tournamentId", new Tournament());
             model.addAttribute("players", playersByTournament);
             model.addAttribute("owner", owner);
-            boolean isReadyTournament =  tournament.getStatus().equals(TournamentStatus.OPEN.name()) && tournament.getPlayersCount() > 1;
+            int solutionsCount = tournamentSolutions.size();
+            boolean isReadyTournament =  tournament.getStatus().equals(TournamentStatus.OPEN.name()) && solutionsCount > 1;
+            boolean isClosedTournament = tournament.getStatus().equals(TournamentStatus.CLOSED.name());
+            boolean isInProcess = tournament.getStatus().equals(TournamentStatus.IN_PROCESS.name());
             model.addAttribute("isReadyTournament", isReadyTournament);
+            model.addAttribute("isClosedTournament", isClosedTournament);
+            model.addAttribute("isInProcess", isInProcess);
             return "tournaments/Tournament";
         }
         return "errors/notFound";
@@ -138,6 +154,7 @@ public class TournamentsController {
             Tournament tournament = tournamentById.get();
             final List<ProgramTemplate> templatesByGame = gameService.getGameProgramTemplates(tournament.getGame().getName()).get();
             final List<String> gameLanguages = templatesByGame.stream().map(ProgramTemplate::getLanguage).collect(Collectors.toList());
+            model.addAttribute("rules", tournament.getGame().getRules().replaceAll("\n", "<br>"));
             model.addAttribute("templates", templatesByGame);
             model.addAttribute("languages", gameLanguages);
             model.addAttribute("tournament", tournament);

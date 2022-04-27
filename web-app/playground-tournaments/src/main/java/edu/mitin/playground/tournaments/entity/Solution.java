@@ -14,6 +14,9 @@ public class Solution {
     private Tournament tournament;
     private String playerName;
 
+    @Column(columnDefinition = "TEXT")
+    private String code;
+    private String language;
 
     public Solution() {
     }
@@ -40,6 +43,22 @@ public class Solution {
 
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }
 

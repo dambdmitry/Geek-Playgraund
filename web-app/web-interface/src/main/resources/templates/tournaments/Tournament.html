@@ -58,10 +58,15 @@
     <div style="min-height: 100vh" class="row">
         <div class="col side">
             <h5 align="center">Создатель турнира</h5>
-            <a th:href="@{/users/{ownerId}(ownerId=${owner.getId().toString()})}" th:text="${owner.getUsername()}"></a>
+            <a th:href="@{/user/{ownerId}(ownerId=${owner.getUsername()})}" th:text="${owner.getUsername()}"></a>
         </div>
         <div class="col-8 mid fluid">
-
+            <p th:utext="${gameDescription}"></p>
+            <div class=" row justify-content-center" th:if="${isOrganizer} and ${isReadyTournament}">
+                <form th:action="@{/tournaments/start/{id}(id=${tournament.id})}" method="post">
+                    <input class="btn btn-outline-primary my-2 my-sm-0" type="submit" value="Начать турнир"/>
+                </form>
+            </div>
             <div th:if="${isPlayer} and ${!hasSolution}">
                 <div class=" row justify-content-center">
                     <form class="form-inline my-2 my-lg-0" th:action="@{/tournaments/tournament/{id}/solution(id=${tournament.id})}" method="get">
@@ -69,6 +74,7 @@
                     </form>
                 </div>
             </div>
+
             <div th:if="${!isPlayer}">
                 <div class=" row justify-content-center">
                     <form class="form-inline my-2 my-lg-0" th:action="@{/tournaments/tournament/{id}/register(id=${tournament.id})}" method="get">
@@ -76,10 +82,33 @@
                     </form>
                 </div>
             </div>
-            <div class=" row justify-content-center" th:if="${isOrganizer} and ${isReadyTournament}">
-                <form th:action="@{/tournaments/start/{id}(id=${tournament.id})}" method="post">
-                    <input class="btn btn-outline-primary my-2 my-sm-0" type="submit" value="Начать турнир"/>
+
+            <div class=" row justify-content-center" th:if="${isClosedTournament} or ${isInProcess}">
+                <form th:action="@{/tournaments/tournament/{id}/results(id=${tournament.id})}" method="get">
+                    <input class="btn btn-outline-primary my-2 my-sm-0" type="submit" value="Результаты турнира"/>
                 </form>
+            </div>
+
+            <div th:if="${isOrganizer} and ${!solutions.isEmpty()} or ${isClosedTournament}">
+                <h5 align="center">Решения игроков</h5>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">№</th>
+                        <th scope="col">Имя игрока</th>
+                        <th scope="col">Язык</th>
+                        <th scope="col">Решение</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="solution, iStat : ${solutions}">
+                        <td th:text="${iStat.index+1}"/>
+                        <td th:text="${solution.playerName}"/>
+                        <td th:text="${solution.language}"/>
+                        <td th:utext="${solution.code}"/>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -95,7 +124,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="player, iStat : ${players}" th:onclick="'window.location.href = \'' + @{/users/{username}(username=${player.account.username})} + '\''" >
+                    <tr th:each="player, iStat : ${players}" th:onclick="'window.location.href = \'' + @{/user/{username}(username=${player.account.username})} + '\''" >
                         <td th:text="${iStat.index+1}"/>
                         <td th:text="${player.account.username}"/>
                         <td th:text="${player.points}"/>
