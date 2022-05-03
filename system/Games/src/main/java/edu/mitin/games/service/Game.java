@@ -25,6 +25,14 @@ public abstract class Game {
         return gameResult;
     }
 
+    public boolean isStandOff(){
+        return false;
+    }
+
+    public String getStart() {
+        return "";
+    }
+
     public abstract boolean isCorrectAction(String action);
 
     public abstract String executeLeftPlayerAction(String action);

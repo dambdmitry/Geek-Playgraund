@@ -1,13 +1,13 @@
 package edu.mitin.performance.model;
 
-import edu.mitin.games.service.model.Language;
+import edu.mitin.performance.factory.Compiler;
 
 import java.io.File;
 
 public class PlayerModel {
     private String playerName;
     private String code;
-    private Language language;
+    private Compiler compiler;
     private File programFile;
     private String[] commandToStart;
 
@@ -23,12 +23,12 @@ public class PlayerModel {
         this.code = code;
     }
 
-    public Language getLanguage() {
-        return language;
+    public Compiler getCompiler() {
+        return compiler;
     }
 
-    public void setLanguage(Language language) {
-        this.language = language;
+    public void setCompiler(Compiler compiler) {
+        this.compiler = compiler;
     }
 
     public File getProgramFile() {

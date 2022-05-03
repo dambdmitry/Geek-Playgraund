@@ -1,16 +1,13 @@
 package edu.mitin.verification.dto;
 
-import edu.mitin.games.service.factory.GameFactory;
-import edu.mitin.games.service.model.Language;
-
 public class Solution {
     private String playerName;
-    private Language language;
+    private String language;
     private String code;
     private String game;
     private Long tournamentId;
 
-    public Solution(String playerName, Language language, String code, String game, Long tournamentId) {
+    public Solution(String playerName, String language, String code, String game, Long tournamentId) {
         this.playerName = playerName;
         this.language = language;
         this.code = code;
@@ -30,7 +27,7 @@ public class Solution {
         return playerName;
     }
 
-    public Language getLanguage() {
+    public String getLanguage() {
         return language;
     }
 

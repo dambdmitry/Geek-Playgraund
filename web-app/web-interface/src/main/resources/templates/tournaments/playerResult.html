@@ -76,7 +76,7 @@
                         <td th:text="${iStat.index+1}"/>
                         <td th:text="${round.hostName}"/>
                         <td th:text="${round.guestName}"/>
-                        <td th:text="${round.winner}"/>
+                        <td th:text="${round.winner} == null ? 'Ничья' : ${round.winner}"/>
                     </tr>
                     </tbody>
                 </table>

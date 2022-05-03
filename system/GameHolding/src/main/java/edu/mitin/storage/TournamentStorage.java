@@ -22,6 +22,8 @@ public interface TournamentStorage {
 
     Long saveRound(Long tournamentId, String hostPlayerName, String guestPlayerName, String winnerName, String hostGoal, String guestGoal);
 
+    Long saveDrawRound(Long tournamentId, String hostPlayerName, String guestPlayerName, String hostGoal, String guestGoal);
+
     Long saveFailedRound(Long tournamentId, String leftPlayerName, String rightPlayerName, String author, String description);
 
     void saveRoundStep(Long roundId, String playerName, String step, Long stepNumber);

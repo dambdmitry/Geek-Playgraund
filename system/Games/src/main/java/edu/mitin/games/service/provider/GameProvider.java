@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  */
 public abstract class GameProvider {
     //Игра в которую играют процессы
-    private Game game;
+    protected Game game;
 
     //Инстансы игроков, left и right - условные их названия.
     protected Player leftPlayer;
@@ -154,6 +154,7 @@ public abstract class GameProvider {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+//        return true; //todo
         return leftPlayerGameFile.delete() && rightPlayerGameFile.delete() && gameDirectory.delete();
     }
 
@@ -175,11 +176,23 @@ public abstract class GameProvider {
     }
 
     protected ResultOfGame getFineGameResult() {
-        return game.getResultOfGame();
+        final ResultOfGame resultOfGame = game.getResultOfGame();
+        if (game.isStandOff()) {
+            resultOfGame.setWinner(null);
+        }
+        return resultOfGame;
     }
 
     protected boolean hasWinAction(String leftPlayerAction, String rightPlayerAction) {
         return game.isWinLeftPlayerAction(leftPlayerAction) || game.isWinRightPlayerAction(rightPlayerAction);
+    }
+
+    protected boolean isWinLeftPlayerAction(String leftPlayerAction) {
+        return game.isWinLeftPlayerAction(leftPlayerAction);
+    }
+
+    protected boolean isWinRightPlayerAction(String rightPlayerAction) {
+        return game.isWinRightPlayerAction(rightPlayerAction);
     }
 
     protected String executeLeftPlayerAction(String action) {

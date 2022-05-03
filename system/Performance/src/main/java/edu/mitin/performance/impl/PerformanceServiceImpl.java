@@ -2,13 +2,16 @@ package edu.mitin.performance.impl;
 
 import edu.mitin.games.service.factory.GameFactory;
 import edu.mitin.games.service.model.Failure;
-import edu.mitin.games.service.model.Language;
 import edu.mitin.games.service.model.Player;
 import edu.mitin.games.service.model.ResultOfGame;
 import edu.mitin.games.service.provider.GameProvider;
 import edu.mitin.performance.PerformanceService;
-import edu.mitin.performance.factory.CompilersCommandFactory;
-import edu.mitin.performance.model.*;
+import edu.mitin.performance.factory.Compiler;
+import edu.mitin.performance.model.GamesGrid;
+import edu.mitin.performance.model.Pair;
+import edu.mitin.performance.model.PlayerModel;
+import edu.mitin.performance.model.TournamentResult;
+import edu.mitin.performance.factory.CompilerFactory;
 import edu.mitin.storage.TournamentStorage;
 import edu.mitin.storage.entity.Solution;
 import edu.mitin.storage.entity.model.TournamentStatus;
@@ -18,19 +21,20 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class PerformanceServiceImpl implements PerformanceService {
 
     private final TournamentStorage storage;
 
+    private final CompilerFactory compilerFactory;
 
-    public PerformanceServiceImpl(@Qualifier("tournamentStorageImpl") TournamentStorage storage) {
+
+    public PerformanceServiceImpl(@Qualifier("tournamentStorageImpl") TournamentStorage storage, CompilerFactory compilerFactory) {
         this.storage = storage;
+        this.compilerFactory = compilerFactory;
     }
 
     @Override
@@ -40,7 +44,6 @@ public class PerformanceServiceImpl implements PerformanceService {
         List<PlayerModel> players = createPlayersModels(tournamentSolutions);
         GamesGrid tournamentGamesGrid = createTournamentGrid(players);
         holdTournament(tournamentGamesGrid, gameName, tournamentId);
-//        deletePlayersProgramFiles(players);
     }
 
     private String getTournamentGame(Long tournamentId) {
@@ -51,30 +54,30 @@ public class PerformanceServiceImpl implements PerformanceService {
         List<PlayerModel> players = new LinkedList<>();
         for (Solution solution : solutions) {
             PlayerModel player = new PlayerModel(solution.getPlayerName());
-            Language language = Language.valueOf(solution.getLanguage());
             player.setCode(solution.getCode());
-            player.setLanguage(language);
+            Compiler compiler = compilerFactory.getCompiler(solution.getLanguage());
+            player.setCompiler(compiler);
             players.add(player);
         }
         return players;
     }
 
-    private File createPlayerProgramFile(Solution solution) {
-        File playerFile = new File(solution.getPlayerName() + Language.valueOf(solution.getLanguage()).getFileExtension());
-        try(FileWriter fileWriter = new FileWriter(playerFile)) {
-            fileWriter.write(solution.getCode());
-            fileWriter.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return playerFile;
-    }
+//    private File createPlayerProgramFile(Solution solution) {
+//        File playerFile = new File(solution.getPlayerName() + Language.valueOf(solution.getLanguage()).getFileExtension());
+//        try(FileWriter fileWriter = new FileWriter(playerFile)) {
+//            fileWriter.write(solution.getCode());
+//            fileWriter.flush();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return playerFile;
+//    }
 
-    private synchronized File createPlayerProgramFile(String playerName, Language language, String code, List<File> programFiles) {
-        File playerFile = new File(playerName + language.getFileExtension());
+    private synchronized File createPlayerProgramFile(String playerName, Compiler compiler, String code, List<File> programFiles) {
+        File playerFile = new File(playerName + compiler.getFileExtension());
         int identifier = 0;
         while (playerFile.exists()) {
-            playerFile = new File(playerName + identifier + language.getFileExtension());
+            playerFile = new File(playerName + identifier + compiler.getFileExtension());
             identifier++;
         }
         try(FileWriter fileWriter = new FileWriter(playerFile)) {
@@ -84,13 +87,15 @@ public class PerformanceServiceImpl implements PerformanceService {
             e.printStackTrace();
         }
         programFiles.add(playerFile);
-        if (language.isTwoStepExecution()) {
+        if (compiler.isTwoStepCompileLanguage()) {
             try {
+                String inputFilePath = playerFile.getAbsolutePath();
+                String outputFilePath = playerFile.getAbsolutePath().split("\\.")[0];
                 Process start = new ProcessBuilder()
-                        .command(CompilersCommandFactory.createCompileCommand(language, playerFile.getAbsolutePath()))
+                        .command(compiler.getCompileCommand(inputFilePath, outputFilePath))
                         .start();
                 start.waitFor();
-                File executionFile = new File(playerFile.getName().split("\\.")[0] + ".exe");
+                File executionFile = new File(outputFilePath + ".exe");
                 programFiles.add(executionFile);
                 return executionFile;
             } catch (IOException | InterruptedException e) {
@@ -112,11 +117,13 @@ public class PerformanceServiceImpl implements PerformanceService {
                 System.out.println(pair.getLeftPlayer().getPlayerName() + " vs " + pair.getRightPlayer().getPlayerName());
                 PlayerModel leftPlayer = pair.getLeftPlayer();
                 PlayerModel rightPlayer = pair.getRightPlayer();
+                Compiler leftPlayerCompiler = leftPlayer.getCompiler();
+                Compiler rightPlayerCompiler = rightPlayer.getCompiler();
 
-                File leftPlayerFile = createPlayerProgramFile(leftPlayer.getPlayerName(), leftPlayer.getLanguage(), leftPlayer.getCode(), programFiles);
-                File rightPlayerFile = createPlayerProgramFile(rightPlayer.getPlayerName(), rightPlayer.getLanguage(), rightPlayer.getCode(), programFiles);
-                String[] leftPlayerCommand = CompilersCommandFactory.createExecuteCommand(leftPlayer.getLanguage(), leftPlayerFile.getAbsolutePath());
-                String[] rightPlayerCommand = CompilersCommandFactory.createExecuteCommand(rightPlayer.getLanguage(), rightPlayerFile.getAbsolutePath());
+                File leftPlayerFile = createPlayerProgramFile(leftPlayer.getPlayerName(), leftPlayerCompiler, leftPlayer.getCode(), programFiles);
+                File rightPlayerFile = createPlayerProgramFile(rightPlayer.getPlayerName(), rightPlayerCompiler, rightPlayer.getCode(), programFiles);
+                String[] leftPlayerCommand = leftPlayerCompiler.getExecutionCommand(leftPlayerFile.getAbsolutePath());
+                String[] rightPlayerCommand = rightPlayerCompiler.getExecutionCommand(rightPlayerFile.getAbsolutePath());
 
                 leftPlayer.setProgramFile(leftPlayerFile);
                 rightPlayer.setProgramFile(rightPlayerFile);
@@ -131,8 +138,6 @@ public class PerformanceServiceImpl implements PerformanceService {
                 if (resultOfFirstGame.getResult() == ResultOfGame.Result.ERROR || resultOfSecondGame.getResult() == ResultOfGame.Result.ERROR) {
                     isTournamentFailed = true;
                 }
-                pair.setLeftPoints(resultOfFirstGame.getWinner().equals(pair.getLeftPlayer().getPlayerName()) ? 1 : 0);
-                pair.setLeftPoints(resultOfFirstGame.getWinner().equals(pair.getRightPlayer().getPlayerName()) ? 1 : 0);
                 saveResult(resultOfFirstGame, tournamentId);
                 saveResult(resultOfSecondGame, tournamentId);
             }
@@ -179,7 +184,12 @@ public class PerformanceServiceImpl implements PerformanceService {
             storage.saveFailedRound(tournamentId, leftPlayerName, rightPlayerName, failure.getAuthor(), failure.getDescription());
         } else {
             String winner = result.getWinner();
-            Long roundId = storage.saveRound(tournamentId, leftPlayerName, rightPlayerName, winner, result.getLeftPlayerGoal(), result.getRightPlayerGoal());
+            Long roundId;
+            if (winner == null) {
+                roundId = storage.saveDrawRound(tournamentId, leftPlayerName, rightPlayerName, result.getLeftPlayerGoal(), result.getRightPlayerGoal());
+            } else {
+                roundId = storage.saveRound(tournamentId, leftPlayerName, rightPlayerName, winner, result.getLeftPlayerGoal(), result.getRightPlayerGoal());
+            }
             saveRoundSteps(leftPlayerName, roundId, result.getLeftPlayerSteps());
             saveRoundSteps(rightPlayerName, roundId, result.getRightPlayerSteps());
         }

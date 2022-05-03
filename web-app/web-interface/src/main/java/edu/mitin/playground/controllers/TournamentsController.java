@@ -352,7 +352,8 @@ public class TournamentsController {
         model.addAttribute("roundName", round.getHostName() + " vs " + round.getGuestName());
         model.addAttribute("hostGoal", hostGoal);
         model.addAttribute("guestGoal", guestGoal);
-        model.addAttribute("winner", "Победитель: " + round.getWinner());
+        String winner = round.getWinner() == null ? "Ничья" : "Победитель: " + round.getWinner();
+        model.addAttribute("winner", winner);
         model.addAttribute("steps", roundSteps);
         return "tournaments/round";
     }

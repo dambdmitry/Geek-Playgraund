@@ -96,6 +96,19 @@ public class TournamentStorageImpl implements TournamentStorage {
     }
 
     @Override
+    public Long saveDrawRound(Long tournamentId, String hostPlayerName, String guestPlayerName, String hostGoal, String guestGoal) {
+        Tournament tournament = tournamentRepository.findById(tournamentId).get();
+        Round round = new Round();
+        round.setTournament(tournament);
+        round.setHostName(hostPlayerName);
+        round.setGuestName(guestPlayerName);
+        round.setGuestGoal(guestGoal);
+        round.setHostGoal(hostGoal);
+        Round save = roundRepository.save(round);
+        return save.getId();
+    }
+
+    @Override
     public Long saveFailedRound(Long tournamentId, String leftPlayerName, String rightPlayerName, String author, String description) {
         Failure failure = new Failure(author, description);
         Failure savedFailure = failureRepository.save(failure);

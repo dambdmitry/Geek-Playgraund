@@ -1,11 +1,10 @@
 package edu.mitin.verification.impl;
 
 import edu.mitin.games.service.factory.GameFactory;
-import edu.mitin.games.service.model.Language;
 import edu.mitin.games.service.model.Player;
 import edu.mitin.games.service.model.ResultOfGame;
-import edu.mitin.games.service.provider.exceptions.GameProviderException;
-import edu.mitin.performance.factory.CompilersCommandFactory;
+import edu.mitin.performance.factory.Compiler;
+import edu.mitin.performance.factory.CompilerFactory;
 import edu.mitin.storage.TournamentStorage;
 import edu.mitin.verification.VerificationService;
 import edu.mitin.verification.dto.VerificationResult;
@@ -28,17 +27,26 @@ public class Verification implements VerificationService {
     @Autowired
     private TournamentStorage storage;
 
+    @Autowired
+    private CompilerFactory factory;
+
 
     @Override
-    public VerificationResult doVerification(Language language, String script, GameFactory.Game game) {
+    public VerificationResult doVerification(String language, String script, GameFactory.Game game) {
         List<File> files = new LinkedList<>();
         File executionFile = null;
+        Compiler compiler;
         try {
-            executionFile = createExecutionFile(language, script, files);
+            compiler = factory.getCompiler(language);
+        } catch (Exception exception) {
+            return new VerificationResult("Нет такого компилятора", VerificationResult.Result.FAILURE);
+        }
+        try {
+            executionFile = createExecutionFile(compiler, script, files);
         } catch (Exception e) {
             return new VerificationResult(e.getMessage(), VerificationResult.Result.FAILURE);
         }
-        String[] command = CompilersCommandFactory.createExecuteCommand(language, executionFile.getAbsolutePath());
+        String[] command = compiler.getExecutionCommand(executionFile.getAbsolutePath());
         Player testPlayer = new Player("test", command);
         final ResultOfGame verification = Objects.requireNonNull(GameFactory.createGameProvider(testPlayer, testPlayer, game)).executeGame();
         System.out.println(verification);
@@ -50,8 +58,8 @@ public class Verification implements VerificationService {
         }
     }
 
-    private File createExecutionFile(Language language, String script, List<File> files) throws Exception {
-        File solutionFile = new File(DEFAULT_FILE_NAME + language.getFileExtension());
+    private File createExecutionFile(Compiler compiler, String script, List<File> files) throws Exception {
+        File solutionFile = new File(DEFAULT_FILE_NAME + compiler.getFileExtension());
         try (FileWriter fileWriter = new FileWriter(solutionFile)){
             fileWriter.write(script);
             fileWriter.flush();
@@ -59,15 +67,17 @@ public class Verification implements VerificationService {
             throw new Exception(e);
         }
         files.add(solutionFile);
-        if (language.isTwoStepExecution()) {
+        if (compiler.isTwoStepCompileLanguage()) {
             try {
+                String inputFilePath = solutionFile.getAbsolutePath();
+                String outputFilePath = solutionFile.getAbsolutePath().split("\\.")[0];
                 Process compileProcess = new ProcessBuilder()
-                        .command(CompilersCommandFactory.createCompileCommand(language, solutionFile.getAbsolutePath()))
+                        .command(compiler.getCompileCommand(inputFilePath, outputFilePath))
                         .start();
                 compileProcess.waitFor(10, TimeUnit.MILLISECONDS);
                 checkCompileErrors(compileProcess.getErrorStream());
                 compileProcess.waitFor();
-                File executionFile = new File(solutionFile.getName().split("\\.")[0] + ".exe");
+                File executionFile = new File(outputFilePath + ".exe");
                 files.add(executionFile);
                 return executionFile;
             } catch (IOException | InterruptedException e) {
@@ -90,7 +100,7 @@ public class Verification implements VerificationService {
     }
 
     @Override
-    public void savePlayerSolution(Long tournamentId, String playerName, String code, Language language) {
-        storage.saveSolution(tournamentId, playerName, code, language.name());
+    public void savePlayerSolution(Long tournamentId, String playerName, String code, String language) {
+        storage.saveSolution(tournamentId, playerName, code, language);
     }
 }

@@ -1,21 +1,13 @@
 package edu.mitin;
 
 import edu.mitin.games.service.factory.GameFactory;
-import edu.mitin.games.service.model.Language;
-import edu.mitin.verification.VerificationService;
-import edu.mitin.verification.dto.Solution;
 import edu.mitin.verification.dto.VerificationResult;
 import edu.mitin.verification.impl.Verification;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
@@ -46,13 +38,13 @@ public class VerificationTest {
 
     @Test
     public void testSuccessVerification(){
-        final VerificationResult verificationResult = service.doVerification(Language.JAVA, successSolutionCode, GameFactory.Game.RANDOMIZE);
+        final VerificationResult verificationResult = service.doVerification("JAVA", successSolutionCode, GameFactory.Game.RANDOMIZE);
         assertEquals(VerificationResult.Result.SUCCESS, verificationResult.getResult());
     }
 
     @Test
     public void testFailureVerification(){
-        final VerificationResult verificationResult = service.doVerification(Language.JAVA, failureSolutionCode, GameFactory.Game.RANDOMIZE);
+        final VerificationResult verificationResult = service.doVerification("JAVA", failureSolutionCode, GameFactory.Game.RANDOMIZE);
         assertEquals(VerificationResult.Result.FAILURE, verificationResult.getResult());
     }
 }

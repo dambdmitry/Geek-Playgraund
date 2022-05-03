@@ -125,15 +125,21 @@ public class ResultsStorageImpl implements ResultsStorages {
 
     private TournamentTableRow createTableRow(String username, List<Round> rounds) {
         TournamentTableRow tournamentTableRow = new TournamentTableRow();
-        int winsCount = (int) rounds.stream().filter(round -> round.getWinner().equals(username)).count();
+        final int drawsCount = (int) rounds.stream().filter(round -> {
+            final boolean b = (round.getGuestName().equals(username) || round.getHostName().equals(username)) && round.getWinner() == null;
+            return b;
+        }).count();
+        int winsCount = (int) rounds.stream().filter(round -> round.getWinner() != null && round.getWinner().equals(username)).count();
         tournamentTableRow.setUsername(username);
         tournamentTableRow.setWinsCount(winsCount);
-        tournamentTableRow.setLosesCount(rounds.size() - winsCount);
-        tournamentTableRow.setPoints(winsCount); // победа - 1 очко
+        tournamentTableRow.setDrawCount(drawsCount);
+        tournamentTableRow.setLosesCount(rounds.size() - winsCount - drawsCount);
+        final int points = winsCount * 3 + drawsCount;
+        tournamentTableRow.setPoints(points); // победа - 3 очка, ничья 1 очко
         Player playerByUserName = tournamentService.getPlayerByUserName(username);
         if (!rounds.isEmpty()){
             Tournament tournament = rounds.get(0).getTournament();
-            tournamentService.savePlayerTournamentPoints(playerByUserName.getId(), tournament.getId(), winsCount);
+            tournamentService.savePlayerTournamentPoints(playerByUserName.getId(), tournament.getId(), points);
         }
         return tournamentTableRow;
     }

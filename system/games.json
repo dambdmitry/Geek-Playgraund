@@ -1,0 +1,46 @@
+{
+  "compilers": [
+    {
+      "id": "JAVA",
+      "name": "java",
+      "fileExtension": ".java",
+      "compileCommand": "",
+      "executeCommand": "java @inputFile"
+    },
+    {
+      "id": "CPP",
+      "name": "C++",
+      "fileExtension": ".cpp",
+      "compileCommand": "g++ -o @outputFile @inputFile",
+      "executeCommand": "@inputFile"
+    },
+    {
+      "id": "PYTHON",
+      "name": "python",
+      "fileExtension": ".py",
+      "compileCommand": "",
+      "executeCommand": "python @inputFile"
+    },
+    {
+      "id": "PASCAL",
+      "name": "PascalABC.NET",
+      "fileExtension": ".pas",
+      "compileCommand": "pabcnetcclear @inputFile",
+      "executeCommand": "@inputFile"
+    },
+    {
+      "id": "C",
+      "name": "C",
+      "fileExtension": ".c",
+      "compileCommand": "gcc -o @outputFile @inputFile",
+      "executeCommand": "@inputFile"
+    },
+    {
+      "id": "PHP",
+      "name": "php",
+      "fileExtension": ".php",
+      "compileCommand": "",
+      "executeCommand": "php -f @inputFile"
+    }
+  ]
+}

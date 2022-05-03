@@ -71,6 +71,7 @@
                             <th scope="col">Имя игрока</th>
                             <th scope="col">Побед</th>
                             <th scope="col">Поражений</th>
+                            <th scope="col">Ничьих</th>
                             <th scope="col">Очки</th>
                         </tr>
                         </thead>
@@ -80,6 +81,7 @@
                             <td th:text="${row.username}"/>
                             <td th:text="${row.winsCount}"/>
                             <td th:text="${row.losesCount}"/>
+                            <td th:text="${row.drawCount}"/>
                             <td th:text="${row.points}"/>
                         </tr>
                         </tbody>

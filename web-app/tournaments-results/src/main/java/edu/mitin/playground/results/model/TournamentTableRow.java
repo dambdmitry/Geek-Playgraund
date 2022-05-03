@@ -6,16 +6,26 @@ public class TournamentTableRow {
     private Integer points;
     private Integer losesCount;
     private Integer winsCount;
+    private Integer drawCount;
 
-    public TournamentTableRow(Integer position, String username, Integer points, Integer losesCount, Integer winsCount) {
+    public TournamentTableRow(Integer position, String username, Integer points, Integer losesCount, Integer winsCount, Integer drawCount) {
         this.position = position;
         this.username = username;
         this.points = points;
         this.losesCount = losesCount;
         this.winsCount = winsCount;
+        this.drawCount = drawCount;
     }
 
     public TournamentTableRow() {
+    }
+
+    public Integer getDrawCount() {
+        return drawCount;
+    }
+
+    public void setDrawCount(Integer drawCount) {
+        this.drawCount = drawCount;
     }
 
     public Integer getPosition() {
