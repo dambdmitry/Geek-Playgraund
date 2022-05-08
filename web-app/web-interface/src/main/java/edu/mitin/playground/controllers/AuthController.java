@@ -95,7 +95,7 @@ public class AuthController {
         String errorMsg = null;
         if (username.length() < 3) {
             errorMsg = "Логин должен содержать больше 3 символов";
-        } else if (!username.matches("[A—Z\\-a-z]+\\w*")) {
+        } else if (!username.matches("[A-z]+\\w*")) {
             errorMsg = "Логин дожен начинаться с буквы и содержать латинский алфавит и цифры";
         } else if (userService.getUserByUsername(username).isPresent()){
             errorMsg = "Такой логин уже существует";
