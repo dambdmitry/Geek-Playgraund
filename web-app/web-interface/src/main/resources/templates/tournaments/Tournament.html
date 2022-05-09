@@ -67,7 +67,7 @@
                     <input class="btn btn-outline-primary my-2 my-sm-0" type="submit" value="Начать турнир"/>
                 </form>
             </div>
-            <div th:if="${isPlayer} and ${!hasSolution}">
+            <div th:if="${isPlayer} and ${!hasSolution} and ${tournament.status.equals('OPEN')}">
                 <div class=" row justify-content-center">
                     <form class="form-inline my-2 my-lg-0" th:action="@{/tournaments/tournament/{id}/solution(id=${tournament.id})}" method="get">
                         <input class="btn btn-outline-primary my-2 my-sm-0" type="submit" value="Отправить решение"/>
@@ -75,7 +75,7 @@
                 </div>
             </div>
 
-            <div th:if="${!isPlayer}">
+            <div th:if="${!isPlayer} and ${tournament.status.equals('OPEN')}">
                 <div class=" row justify-content-center">
                     <form class="form-inline my-2 my-lg-0" th:action="@{/tournaments/tournament/{id}/register(id=${tournament.id})}" method="get">
                         <input class="btn btn-outline-primary my-2 my-sm-0" type="submit" value="Стать участником турнира"/>

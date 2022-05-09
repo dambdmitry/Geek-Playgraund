@@ -206,7 +206,7 @@ public class TournamentsController {
         Optional<Tournament> tournamentById = tournamentService.getTournamentById(idTour);
         if (tournamentById.isPresent()) {
             Tournament tournament = tournamentById.get();
-            if (isThePlayerOfTheTournament(tournament)) {
+            if (isThePlayerOfTheTournament(tournament) || !tournament.getStatus().equals("OPEN")) {
                 return "errors/notFound";
             }
             if (tournament.getSecretKey() != null) {
@@ -235,7 +235,7 @@ public class TournamentsController {
         Optional<Tournament> tournamentById = tournamentService.getTournamentById(idTour);
         if (tournamentById.isPresent()) {
             Tournament tournament = tournamentById.get();
-            if (isThePlayerOfTheTournament(tournament)) {
+            if (isThePlayerOfTheTournament(tournament) || !tournament.getStatus().equals("OPEN")) {
                 return "errors/notFound";
             }
             if (tournament.getSecretKey().equals(secretKey.getSecretKey())) {

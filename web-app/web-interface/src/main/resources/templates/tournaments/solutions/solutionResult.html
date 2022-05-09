@@ -61,19 +61,22 @@
         <div class="col-10 mid fluid">
             <div class="row">
                 <h3 align="center" th:text="${result}"></h3>
-                <br>
+            </div>
+            <div class="row">
                 <p th:text="${error}"></p>
-                <br>
+            </div>
+            <div class="row">
                 <div th:if="${failure}">
                     <form th:action="@{/tournaments/tournament/{id}/solution(id=${tournament})}" method="get">
                         <input class="btn btn-primary" type="submit" value="Отправить решение повторно"/>
                     </form>
                 </div>
             </div>
+            </div>
         </div>
         <div class="col side">
         </div>
-    </div>
+</div>
 
 </div>
 
