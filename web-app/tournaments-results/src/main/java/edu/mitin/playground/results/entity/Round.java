@@ -1,6 +1,6 @@
 package edu.mitin.playground.results.entity;
 
-import edu.mitin.playground.tournaments.entity.Tournament;
+import edu.mitin.playground.inter.tournaments.entity.Tournament;
 
 import javax.persistence.*;
 

@@ -13,7 +13,15 @@ public class Response {
         return success;
     }
 
+    public void setSuccess(Boolean success) {
+        this.success = success;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

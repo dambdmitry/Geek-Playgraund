@@ -23,11 +23,6 @@ public class TournamentController {
         this.performanceService = performanceService;
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return storage.isPresentTournament(5L).toString();
-    }
-
     @PostMapping(value = "/start-tournament", produces = "application/json", consumes = "application/json")
     public Response startTournament(@RequestParam String tournamentId) {
         Long id = Long.valueOf(tournamentId);

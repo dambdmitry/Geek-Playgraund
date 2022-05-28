@@ -1,30 +1,31 @@
 package edu.mitin.playground.controllers;
 
 import com.google.gson.Gson;
-import edu.mitin.playground.communicate.ApiRequests;
 import edu.mitin.playground.dto.Response;
 import edu.mitin.playground.dto.Solution;
-import edu.mitin.playground.games.GameService;
-import edu.mitin.playground.games.entity.Game;
-import edu.mitin.playground.games.entity.ProgramTemplate;
+import edu.mitin.playground.inter.games.GameService;
+import edu.mitin.playground.inter.games.entity.Game;
+import edu.mitin.playground.inter.games.entity.ProgramTemplate;
+import edu.mitin.playground.inter.tournaments.TournamentService;
+import edu.mitin.playground.inter.tournaments.entity.Tournament;
+import edu.mitin.playground.inter.tournaments.entity.model.SecretKey;
+import edu.mitin.playground.inter.tournaments.entity.model.TournamentStatus;
+import edu.mitin.playground.results.ResultsStorages;
+import edu.mitin.playground.results.entity.Failure;
 import edu.mitin.playground.results.entity.Round;
 import edu.mitin.playground.results.entity.RoundStep;
-import edu.mitin.playground.tournaments.TournamentService;
-import edu.mitin.playground.tournaments.entity.Tournament;
-import edu.mitin.playground.tournaments.entity.model.SecretKey;
-import edu.mitin.playground.tournaments.entity.model.TournamentStatus;
+import edu.mitin.playground.results.model.TournamentTableRow;
 import edu.mitin.playground.users.UserService;
 import edu.mitin.playground.users.entity.Permission;
 import edu.mitin.playground.users.entity.Player;
 import edu.mitin.playground.users.entity.User;
-import edu.mitin.playground.results.ResultsStorages;
-import edu.mitin.playground.results.model.TournamentTableRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import edu.mitin.playground.communicate.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -114,14 +115,6 @@ public class TournamentsController {
             User owner = tournament.getOwner();
             List<Player> playersByTournament = tournamentService.getPlayersByTournament(tournament);
             var tournamentSolutions = tournamentService.getTournamentSolutions(tournament.getId());
-            tournamentSolutions.forEach(solution -> {
-                solution.setCode(solution.getCode().replaceAll("<", "&lt;"));
-                solution.setCode(solution.getCode().replaceAll(">", "&gt;"));
-                solution.setCode(solution.getCode().replaceAll("\"", "&quot;"));
-                solution.setCode(solution.getCode().replaceAll("'", "&#39;"));
-                solution.setCode(solution.getCode().replaceAll(" ", "&nbsp;"));
-                solution.setCode(solution.getCode().replaceAll("\n", "<br>"));
-            });
             model.addAttribute("gameDescription", tournament.getGame().getDescription().replaceAll("\n", "<br>"));
             model.addAttribute("solutions", tournamentSolutions);
             model.addAttribute("tournament", tournament);
@@ -226,8 +219,8 @@ public class TournamentsController {
         return "errors/notFound";
     }
 
-    @PostMapping("tournament/{id}/register")
-    public String registerToTournament(@PathVariable String id, SecretKey secretKey, Model model) {
+    @PostMapping("tournament/{id}/restart")
+    public String restartTournament(@PathVariable String id, Model model) {
         if (!isCorrectId(id)) {
             return "errors/notFound";
         }
@@ -235,23 +228,14 @@ public class TournamentsController {
         Optional<Tournament> tournamentById = tournamentService.getTournamentById(idTour);
         if (tournamentById.isPresent()) {
             Tournament tournament = tournamentById.get();
-            if (isThePlayerOfTheTournament(tournament) || !tournament.getStatus().equals("OPEN")) {
-                return "errors/notFound";
+            if (!isTheOrganizerOfTheTournament(tournament) || tournament.getStatus().equals("OPEN")){
+                return "errors/noAccess";
             }
-            if (tournament.getSecretKey().equals(secretKey.getSecretKey())) {
-                User user = getCurrentUser().get();
-                if (tournamentService.registerPlayerToTournament(tournament, user)) {
-                    return "redirect:/tournaments/tournament/" + tournament.getId().toString();
-                }
-            }
-            model.addAttribute(ERROR_ATTRIBUTE_NAME, "Неверный ключ");
-            User owner = tournament.getOwner();
-            List<Player> playersByTournament = tournamentService.getPlayersByTournament(tournament);
-            model.addAttribute("players", playersByTournament);
-            model.addAttribute("owner", owner);
-            model.addAttribute("id", id);
-            model.addAttribute("secret", new SecretKey());
-            return "tournaments/registerTournament";
+
+            tournamentService.setTournamentStatus(tournament.getId(), TournamentStatus.OPEN);
+            tournamentService.clearPlayersPoints(tournament.getId());
+            resultsStorages.clearResults(tournament.getId());
+            return "redirect:/tournaments/tournament/" + tournament.getId().toString();
         }
         return "errors/notFound";
     }
@@ -294,38 +278,16 @@ public class TournamentsController {
         }
         Tournament tournament = tournamentById.get();
         model.addAttribute("tournament", tournament);
-        if (resultsStorages.hasTournamentFailedRounds(tournament.getId())) {
-            model.addAttribute(ERROR_ATTRIBUTE_NAME, "Турнир завершен с ошибкой, посмотреть результаты можно в отчете");
-            return "tournaments/results";
-        }
+//        if (resultsStorages.hasTournamentFailedRounds(tournament.getId())) {
+//            model.addAttribute(ERROR_ATTRIBUTE_NAME, "Турнир завершен с ошибкой, посмотреть результаты можно в отчете");
+//            return "tournaments/results";
+//        }
         model.addAttribute("status", TournamentStatus.valueOf(tournament.getStatus()).getStatus());
         List<TournamentTableRow> tournamentTable = resultsStorages.createSortedTournamentTable(idTour);
         model.addAttribute("table", tournamentTable);
         return "tournaments/results";
     }
 
-    @GetMapping("/tournament/{id}/report")
-    public String getTournamentReport(@PathVariable String id, Model model) {
-        if (!isCorrectId(id)) {
-            return "errors/notFound";
-        }
-        long idTour = Long.parseLong(id);
-        Optional<Tournament> tournamentById = tournamentService.getTournamentById(idTour);
-        if (tournamentById.isEmpty()) {
-            return "errors/notFound";
-        }
-
-        Tournament tournament = tournamentById.get();
-        model.addAttribute("tournament", tournament);
-        if (resultsStorages.hasTournamentFailedRounds(tournament.getId())) {
-            model.addAttribute("result", "Турнир завершен с ошибкой");
-            List<Round> failedRounds = resultsStorages.getFailedRounds(tournament.getId());
-            model.addAttribute("failedRound", failedRounds);
-        } else {
-            model.addAttribute("result", "Турнир завершен успешно");
-        }
-        return "tournaments/report";
-    }
 
     @GetMapping("/tournament/{id}/{playerName}/result")
     public String getPlayerResult(@PathVariable Long id,
@@ -352,7 +314,17 @@ public class TournamentsController {
         model.addAttribute("roundName", round.getHostName() + " vs " + round.getGuestName());
         model.addAttribute("hostGoal", hostGoal);
         model.addAttribute("guestGoal", guestGoal);
-        String winner = round.getWinner() == null ? "Ничья" : "Победитель: " + round.getWinner();
+        String winner;
+        final Failure failure = round.getFailure();
+        if (failure != null) {
+            final String failedPlayer = failure.getAuthorName();
+            winner = "Техническое поражение ";
+            winner += failedPlayer.equals(round.getGuestName()) ? round.getGuestName() : round.getHostName();
+            winner += " из-за ошибки";
+            model.addAttribute("failure", failure.getDescription());
+        } else {
+            winner = round.getWinner() == null ? "Ничья" : "Победитель: " + round.getWinner();
+        }
         model.addAttribute("winner", winner);
         model.addAttribute("steps", roundSteps);
         return "tournaments/round";
@@ -388,6 +360,11 @@ public class TournamentsController {
         return currentUser.filter(user -> tournamentService.getPlayersByTournament(tournament)
                 .stream()
                 .anyMatch(player -> player.getAccount().getId().equals(user.getId()))).isPresent();
+    }
+
+    private boolean isTheOrganizerOfTheTournament(Tournament tournament) {
+        User currentUser = getCurrentUser().get();
+        return tournament.getOwner().getUsername().equals(currentUser.getUsername());
     }
 
     private boolean hasPlayerSolution(Tournament tournament) {

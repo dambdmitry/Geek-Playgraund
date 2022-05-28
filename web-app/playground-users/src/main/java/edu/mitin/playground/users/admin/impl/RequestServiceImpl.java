@@ -12,8 +12,8 @@ import java.util.Optional;
 
 @Service
 public class RequestServiceImpl implements RequestService {
-    private final UserService service;
 
+    private final UserService service;
     private final RequestRepository requestRepository;
 
     @Autowired

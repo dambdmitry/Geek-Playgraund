@@ -16,21 +16,13 @@ import java.util.Optional;
 public class AdminServiceImpl implements AdminService {
 
     final RequestRepository requestRepository;
-
     final UserRepository userRepository;
+    final UserService userService;
 
-    final
-    UserService s;
-
-    public AdminServiceImpl(RequestRepository requestRepository, UserRepository userRepository, UserService s) {
+    public AdminServiceImpl(RequestRepository requestRepository, UserRepository userRepository, UserService userService) {
         this.requestRepository = requestRepository;
         this.userRepository = userRepository;
-        this.s = s;
-    }
-
-    @Override
-    public void deleteUser(User user) {
-        userRepository.delete(user);
+        this.userService = userService;
     }
 
     @Override
@@ -53,7 +45,6 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void rejectOrganizer(Long requestId) {
         requestRepository.deleteById(requestId);
-        //todo
     }
 
     @Override

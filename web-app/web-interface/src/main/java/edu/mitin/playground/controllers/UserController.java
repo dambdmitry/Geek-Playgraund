@@ -1,7 +1,7 @@
 package edu.mitin.playground.controllers;
 
-import edu.mitin.playground.tournaments.TournamentService;
-import edu.mitin.playground.tournaments.entity.Tournament;
+import edu.mitin.playground.inter.tournaments.TournamentService;
+import edu.mitin.playground.inter.tournaments.entity.Tournament;
 import edu.mitin.playground.users.UserService;
 import edu.mitin.playground.users.entity.Permission;
 import edu.mitin.playground.users.entity.Player;

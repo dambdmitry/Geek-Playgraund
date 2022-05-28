@@ -1,6 +1,7 @@
 package edu.mitin.games.service.provider;
 
 import edu.mitin.games.service.Game;
+import edu.mitin.games.service.model.Failure;
 import edu.mitin.games.service.model.Player;
 import edu.mitin.games.service.model.ResultOfGame;
 import edu.mitin.games.service.provider.exceptions.GameProviderException;
@@ -59,9 +60,9 @@ public abstract class GameProvider {
 
     protected ResultOfGame getFailedResultOfGame(GameProviderException ex) {
         closeAndDeleteProcesses();
-        ResultOfGame resultOfGame = new ResultOfGame(ResultOfGame.Result.ERROR, ex.getAuthor(), ex.getMessage());
-        resultOfGame.setLeftPlayerName(leftPlayer.getName());
-        resultOfGame.setRightPlayerName(rightPlayer.getName());
+        final ResultOfGame resultOfGame = game.getResultOfGame();
+        resultOfGame.setResult(ResultOfGame.Result.ERROR);
+        resultOfGame.setFailure(new Failure(ex.getAuthor(), ex.getMessage()));
         return resultOfGame;
     }
 

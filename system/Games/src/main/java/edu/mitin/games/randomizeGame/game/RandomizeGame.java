@@ -10,8 +10,8 @@ public class RandomizeGame extends Game {
 
     public RandomizeGame(String leftPlayerName, String rightPlayerName) {
         super(leftPlayerName, rightPlayerName);
-        gameResult.setRightPlayerGoal(randomLeftPlayer.toString());
-        gameResult.setLeftPlayerGoal(randomRightPlayer.toString());
+        super.gameResult.setRightPlayerGoal(randomLeftPlayer.toString());
+        super.gameResult.setLeftPlayerGoal(randomRightPlayer.toString());
     }
 
     @Override

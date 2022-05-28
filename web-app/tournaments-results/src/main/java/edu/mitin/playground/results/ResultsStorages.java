@@ -1,5 +1,6 @@
 package edu.mitin.playground.results;
 
+import edu.mitin.playground.inter.tournaments.entity.Tournament;
 import edu.mitin.playground.results.entity.Round;
 import edu.mitin.playground.results.entity.RoundStep;
 import edu.mitin.playground.results.model.TournamentTableRow;
@@ -15,11 +16,7 @@ public interface ResultsStorages {
 
     Round getRound(Long roundId);
 
-    Boolean hasTournamentFailedRounds(Long tournamentId);
-
-    List<Round> getFailedRounds(Long tournamentId);
-
     List<RoundStep> getSortedRoundSteps(Long roundId, String hostPlayerName, String guestPlayerName);
 
-    boolean isAllGamesPlayed(Long tournamentId);
+    void clearResults(Long tournamentId);
 }

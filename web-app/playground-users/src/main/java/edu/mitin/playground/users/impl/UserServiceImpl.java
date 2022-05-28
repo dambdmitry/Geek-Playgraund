@@ -22,7 +22,6 @@ public class UserServiceImpl implements UserService {
     private final PlayerRepository playerRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-
     @Autowired
     public UserServiceImpl(UserRepository userRepository, PlayerRepository playerRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -40,15 +39,6 @@ public class UserServiceImpl implements UserService {
         user.setRole(Role.USER);
         userRepository.save(user);
         return true;
-    }
-
-    @Override
-    public User getUserById(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            return user.get();
-        }
-        throw new RuntimeException("User not found");
     }
 
     @Override
@@ -82,7 +72,7 @@ public class UserServiceImpl implements UserService {
         try {
             user = loadUserByUsername(username);
         } catch (UsernameNotFoundException ex) {
-            System.out.println("ТАкого неет");
+            System.out.println("Пользователя не существует");
         }
         return Optional.ofNullable((User)user);
     }
@@ -90,11 +80,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Player> getAllPlayers() {
         return playerRepository.findAll(Sort.by("points"));
-    }
-
-    @Override
-    public Player getPlayerByUser(User user) {
-        return playerRepository.findByAccount(user).get();
     }
 
     @Override

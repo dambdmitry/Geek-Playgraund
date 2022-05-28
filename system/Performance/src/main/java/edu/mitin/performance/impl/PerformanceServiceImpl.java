@@ -10,7 +10,6 @@ import edu.mitin.performance.factory.Compiler;
 import edu.mitin.performance.model.GamesGrid;
 import edu.mitin.performance.model.Pair;
 import edu.mitin.performance.model.PlayerModel;
-import edu.mitin.performance.model.TournamentResult;
 import edu.mitin.performance.factory.CompilerFactory;
 import edu.mitin.storage.TournamentStorage;
 import edu.mitin.storage.entity.Solution;
@@ -28,9 +27,7 @@ import java.util.List;
 public class PerformanceServiceImpl implements PerformanceService {
 
     private final TournamentStorage storage;
-
     private final CompilerFactory compilerFactory;
-
 
     public PerformanceServiceImpl(@Qualifier("tournamentStorageImpl") TournamentStorage storage, CompilerFactory compilerFactory) {
         this.storage = storage;
@@ -61,17 +58,6 @@ public class PerformanceServiceImpl implements PerformanceService {
         }
         return players;
     }
-
-//    private File createPlayerProgramFile(Solution solution) {
-//        File playerFile = new File(solution.getPlayerName() + Language.valueOf(solution.getLanguage()).getFileExtension());
-//        try(FileWriter fileWriter = new FileWriter(playerFile)) {
-//            fileWriter.write(solution.getCode());
-//            fileWriter.flush();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return playerFile;
-//    }
 
     private synchronized File createPlayerProgramFile(String playerName, Compiler compiler, String code, List<File> programFiles) {
         File playerFile = new File(playerName + compiler.getFileExtension());
@@ -107,14 +93,12 @@ public class PerformanceServiceImpl implements PerformanceService {
         }
     }
 
-    private TournamentResult holdTournament(GamesGrid tournamentGamesGrid, String game, Long tournamentId) {
+    private void holdTournament(GamesGrid tournamentGamesGrid, String game, Long tournamentId) {
         final List<Pair> pairs = tournamentGamesGrid.getPairs();
-
         Thread games = new Thread(() -> {
             List<File> programFiles = new LinkedList<>();
             boolean isTournamentFailed = false;
             for (Pair pair : pairs) {
-                System.out.println(pair.getLeftPlayer().getPlayerName() + " vs " + pair.getRightPlayer().getPlayerName());
                 PlayerModel leftPlayer = pair.getLeftPlayer();
                 PlayerModel rightPlayer = pair.getRightPlayer();
                 Compiler leftPlayerCompiler = leftPlayer.getCompiler();
@@ -130,26 +114,14 @@ public class PerformanceServiceImpl implements PerformanceService {
                 leftPlayer.setCommandToStart(leftPlayerCommand);
                 rightPlayer.setCommandToStart(rightPlayerCommand);
 
-                System.out.println(leftPlayerFile.getName());
-                System.out.println(rightPlayerFile.getName());
-
                 ResultOfGame resultOfFirstGame = holdGame(leftPlayer, rightPlayer, game);
                 ResultOfGame resultOfSecondGame = holdGame(rightPlayer, leftPlayer, game);
-                if (resultOfFirstGame.getResult() == ResultOfGame.Result.ERROR || resultOfSecondGame.getResult() == ResultOfGame.Result.ERROR) {
-                    isTournamentFailed = true;
-                }
                 saveResult(resultOfFirstGame, tournamentId);
                 saveResult(resultOfSecondGame, tournamentId);
             }
-            if (isTournamentFailed) {
-                storage.setTournamentStatus(tournamentId, TournamentStatus.FAILURE);
-            } else {
-                storage.setTournamentStatus(tournamentId, TournamentStatus.CLOSED);
-            }
-            programFiles.forEach(f -> System.out.println(f.getName() + " " + f.delete()));
+            storage.setTournamentStatus(tournamentId, TournamentStatus.CLOSED);storage.setTournamentStatus(tournamentId, TournamentStatus.CLOSED);
         });
         games.start();
-        return null;
     }
 
 
@@ -179,20 +151,21 @@ public class PerformanceServiceImpl implements PerformanceService {
     private void saveResult(ResultOfGame result, Long tournamentId) {
         String leftPlayerName = result.getLeftPlayerName();
         String rightPlayerName = result.getRightPlayerName();
+        Long roundId;
         if (result.getResult() == ResultOfGame.Result.ERROR) {
             Failure failure = result.getFailure();
-            storage.saveFailedRound(tournamentId, leftPlayerName, rightPlayerName, failure.getAuthor(), failure.getDescription());
+            roundId = storage.saveFailedRound(tournamentId, leftPlayerName, rightPlayerName, failure.getAuthor(), failure.getDescription(), result.getLeftPlayerGoal(), result.getRightPlayerGoal());
         } else {
             String winner = result.getWinner();
-            Long roundId;
+
             if (winner == null) {
                 roundId = storage.saveDrawRound(tournamentId, leftPlayerName, rightPlayerName, result.getLeftPlayerGoal(), result.getRightPlayerGoal());
             } else {
                 roundId = storage.saveRound(tournamentId, leftPlayerName, rightPlayerName, winner, result.getLeftPlayerGoal(), result.getRightPlayerGoal());
             }
-            saveRoundSteps(leftPlayerName, roundId, result.getLeftPlayerSteps());
-            saveRoundSteps(rightPlayerName, roundId, result.getRightPlayerSteps());
         }
+        saveRoundSteps(leftPlayerName, roundId, result.getLeftPlayerSteps());
+        saveRoundSteps(rightPlayerName, roundId, result.getRightPlayerSteps());
     }
 
     private void saveRoundSteps(String playerName, Long roundId, List<String> playerSteps) {
@@ -202,5 +175,4 @@ public class PerformanceServiceImpl implements PerformanceService {
             storage.saveRoundStep(roundId, playerName, step, stepNumber);
         }
     }
-
 }

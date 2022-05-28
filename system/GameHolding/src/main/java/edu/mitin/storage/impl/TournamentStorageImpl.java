@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TournamentStorageImpl implements TournamentStorage {
@@ -47,19 +48,6 @@ public class TournamentStorageImpl implements TournamentStorage {
         newSolution.setCode(code);
         newSolution.setLanguage(language);
         solutionRepository.save(newSolution);
-        return true;
-    }
-
-    @Override
-    public boolean saveTournament(Long tournamentId, Long gameId) {
-        final Optional<Game> tournamentGame = gameRepository.findById(gameId);
-        if (tournamentRepository.findById(tournamentId).isPresent() || tournamentGame.isEmpty()) {
-            return false;
-        }
-        final Tournament newTournament = new Tournament();
-        newTournament.setId(tournamentId);
-        newTournament.setGame(tournamentGame.get());
-        tournamentRepository.save(newTournament);
         return true;
     }
 
@@ -109,13 +97,19 @@ public class TournamentStorageImpl implements TournamentStorage {
     }
 
     @Override
-    public Long saveFailedRound(Long tournamentId, String leftPlayerName, String rightPlayerName, String author, String description) {
+    public Long saveFailedRound(Long tournamentId, String leftPlayerName, String rightPlayerName, String author, String description, String leftPlayerGoal, String rightPlayerGoal) {
         Failure failure = new Failure(author, description);
         Failure savedFailure = failureRepository.save(failure);
+        Tournament tournament = tournamentRepository.findById(tournamentId).get();
         Round round = new Round();
+        String winner = author.equals(leftPlayerName) ? rightPlayerName : leftPlayerName;
+        round.setWinner(winner);
+        round.setTournament(tournament);
         round.setFailure(savedFailure);
         round.setGuestName(leftPlayerName);
         round.setHostName(rightPlayerName);
+        round.setGuestGoal(rightPlayerGoal);
+        round.setHostGoal(leftPlayerGoal);
         Round save = roundRepository.save(round);
         return save.getId();
     }
@@ -141,11 +135,6 @@ public class TournamentStorageImpl implements TournamentStorage {
         Tournament tournament = tournamentRepository.findById(tournamentId).get();
         tournament.setStatus(status.name());
         tournamentRepository.save(tournament);
+        System.getenv().keySet().stream().collect(Collectors.joining(" "));
     }
-
-    @Override
-    public void updatePlayerPoints(String playerName, Integer points) {
-
-    }
-
 }

@@ -13,8 +13,6 @@ public interface UserService extends UserDetailsService {
 
     boolean registerUser(User user);
 
-    User getUserById(Long id);
-
     boolean registerPlayer(User user);
 
     Optional<Player> getPlayerByUserAccount(User user);
@@ -22,7 +20,5 @@ public interface UserService extends UserDetailsService {
     Optional<User> getUserByUsername(String username);
 
     List<Player> getAllPlayers();
-
-    Player getPlayerByUser(User user);
 
 }

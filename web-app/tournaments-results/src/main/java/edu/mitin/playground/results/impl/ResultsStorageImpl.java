@@ -1,13 +1,13 @@
 package edu.mitin.playground.results.impl;
 
+import edu.mitin.playground.inter.tournaments.TournamentService;
+import edu.mitin.playground.inter.tournaments.entity.Tournament;
 import edu.mitin.playground.results.entity.RoundStep;
-import edu.mitin.playground.tournaments.TournamentService;
-import edu.mitin.playground.tournaments.entity.Tournament;
+import edu.mitin.playground.results.model.TournamentTableRow;
 import edu.mitin.playground.users.entity.Player;
 import edu.mitin.playground.users.entity.User;
 import edu.mitin.playground.results.ResultsStorages;
 import edu.mitin.playground.results.entity.Round;
-import edu.mitin.playground.results.model.TournamentTableRow;
 import edu.mitin.playground.results.repository.RoundRepository;
 import edu.mitin.playground.results.repository.RoundStepRepository;
 import org.springframework.stereotype.Service;
@@ -56,18 +56,6 @@ public class ResultsStorageImpl implements ResultsStorages {
         return roundRepository.getById(roundId);
     }
 
-    @Override
-    public Boolean hasTournamentFailedRounds(Long tournamentId) {
-        Tournament tournament = tournamentService.getTournamentById(tournamentId).get();
-        List<Round> failedRounds = roundRepository.findAllByTournamentAndFailureIsNotNull(tournament);
-        return !failedRounds.isEmpty();
-    }
-
-    @Override
-    public List<Round> getFailedRounds(Long tournamentId) {
-        Tournament tournament = tournamentService.getTournamentById(tournamentId).get();
-        return roundRepository.findAllByTournamentAndFailureIsNotNull(tournament);
-    }
 
     @Override
     public List<RoundStep> getSortedRoundSteps(Long roundId, String hostPlayerName, String guestPlayerName) {
@@ -87,28 +75,35 @@ public class ResultsStorageImpl implements ResultsStorages {
             result.add(guestPlayerSteps.get(i));
         }
         if (hostPlayerSteps.size() > guestPlayerSteps.size()) {
-            result.add(hostPlayerSteps.get(hostPlayerSteps.size()-1));
+            result.add(hostPlayerSteps.get(hostPlayerSteps.size() - 1));
         }
         return result;
     }
 
     @Override
-    public boolean isAllGamesPlayed(Long tournamentId) {
-        Tournament tournament = tournamentService.getTournamentById(tournamentId).get();
-        List<Round> rounds = roundRepository.findAllByTournament(tournament);
-        List<String> winners = rounds.stream().map(Round::getWinner).filter(Objects::nonNull).collect(Collectors.toList());
-        Integer playersCount = tournament.getPlayersCount();
-        return (playersCount*(playersCount-1)) == winners.size();
+    public void clearResults(Long tournamentId) {
+        final Tournament tournament = tournamentService.getTournamentById(tournamentId).get();
+        final List<Round> tournamenRounds = roundRepository.findAllByTournament(tournament);
+        for (Round round : tournamenRounds) {
+            final List<RoundStep> roundSteps = roundStepRepository.findAllByRound(round);
+            for (RoundStep step : roundSteps) {
+                roundStepRepository.deleteById(step.getId());
+            }
+            roundRepository.deleteById(round.getId());
+        }
     }
 
     private void setTablePositions(List<TournamentTableRow> sortedTable) {
         for (int i = 0; i < sortedTable.size(); i++) {
-            sortedTable.get(i).setPosition(i+1);
+            sortedTable.get(i).setPosition(i + 1);
         }
     }
 
     private List<TournamentTableRow> sortTableByPoints(List<TournamentTableRow> table) {
-        return table.stream().sorted(Comparator.comparingInt(TournamentTableRow::getPoints).reversed()).collect(Collectors.toList());
+        return table
+                .stream()
+                .sorted(Comparator.comparingInt(TournamentTableRow::getPoints).reversed())
+                .collect(Collectors.toList());
     }
 
     private List<TournamentTableRow> initTournamentTable(List<User> users, Long tournamentId) {
@@ -126,10 +121,14 @@ public class ResultsStorageImpl implements ResultsStorages {
     private TournamentTableRow createTableRow(String username, List<Round> rounds) {
         TournamentTableRow tournamentTableRow = new TournamentTableRow();
         final int drawsCount = (int) rounds.stream().filter(round -> {
-            final boolean b = (round.getGuestName().equals(username) || round.getHostName().equals(username)) && round.getWinner() == null;
-            return b;
+            return (round.getGuestName().equals(username)
+                    || round.getHostName().equals(username))
+                    && round.getWinner() == null;
         }).count();
-        int winsCount = (int) rounds.stream().filter(round -> round.getWinner() != null && round.getWinner().equals(username)).count();
+        int winsCount = (int) rounds
+                .stream()
+                .filter(round -> round.getWinner() != null && round.getWinner().equals(username))
+                .count();
         tournamentTableRow.setUsername(username);
         tournamentTableRow.setWinsCount(winsCount);
         tournamentTableRow.setDrawCount(drawsCount);
@@ -137,7 +136,7 @@ public class ResultsStorageImpl implements ResultsStorages {
         final int points = winsCount * 3 + drawsCount;
         tournamentTableRow.setPoints(points); // победа - 3 очка, ничья 1 очко
         Player playerByUserName = tournamentService.getPlayerByUserName(username);
-        if (!rounds.isEmpty()){
+        if (!rounds.isEmpty()) {
             Tournament tournament = rounds.get(0).getTournament();
             tournamentService.savePlayerTournamentPoints(playerByUserName.getId(), tournament.getId(), points);
         }

@@ -1,0 +1,1 @@
+response&nbsp;=&nbsp;50&lt;br&gt;print(response)&lt;br&gt;&lt;br&gt;while&nbsp;True:&lt;br&gt;&nbsp;&nbsp;&nbsp;&nbsp;answer&nbsp;=&nbsp;int(input())&lt;br&gt;&nbsp;&nbsp;&nbsp;&nbsp;response&nbsp;-=&nbsp;1&lt;br&gt;&nbsp;&nbsp;&nbsp;&nbsp;print(response)

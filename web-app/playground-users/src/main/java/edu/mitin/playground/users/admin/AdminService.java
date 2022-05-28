@@ -9,8 +9,6 @@ import java.util.List;
 @Service
 public interface AdminService {
 
-    void deleteUser(User user);
-
     void acceptOrganizer(Long requestId);
 
     void rejectOrganizer(Long requestId);

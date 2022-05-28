@@ -8,15 +8,6 @@ public class TournamentTableRow {
     private Integer winsCount;
     private Integer drawCount;
 
-    public TournamentTableRow(Integer position, String username, Integer points, Integer losesCount, Integer winsCount, Integer drawCount) {
-        this.position = position;
-        this.username = username;
-        this.points = points;
-        this.losesCount = losesCount;
-        this.winsCount = winsCount;
-        this.drawCount = drawCount;
-    }
-
     public TournamentTableRow() {
     }
 

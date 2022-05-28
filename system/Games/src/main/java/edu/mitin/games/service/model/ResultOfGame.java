@@ -15,6 +15,9 @@ public class ResultOfGame {
 
     private Failure failure;
 
+    public void setFailure(Failure failure) {
+        this.failure = failure;
+    }
 
     private List<String> leftPlayerSteps;
     private List<String> rightPlayerSteps;

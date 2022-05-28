@@ -31,10 +31,6 @@ public class PlayerModel {
         this.compiler = compiler;
     }
 
-    public File getProgramFile() {
-        return programFile;
-    }
-
     public String getPlayerName() {
         return playerName;
     }

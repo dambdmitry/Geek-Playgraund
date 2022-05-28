@@ -21,12 +21,12 @@ public class ApiRequests {
     private String port;
     private String apiContext = "api/v1/";
 
+    public ApiRequests() {
+    }
+
     public enum ActionRequestBody {
         VERIFY("verification/verify-solution");
-
-
         private String endpoint;
-
         ActionRequestBody(String endpoint) {
             this.endpoint = endpoint;
         }

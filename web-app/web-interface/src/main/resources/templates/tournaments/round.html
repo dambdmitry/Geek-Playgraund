@@ -61,6 +61,7 @@
         <div class="col-8 mid fluid">
             <h2 align="center" th:text="${roundName}"></h2>
             <h4 align="center" th:text="${winner}"></h4>
+            <h6 align="center" th:if="${failure} != null" th:text="${failure}"></h6>
             <div class="row">
                 <div class="col ">
                     <h5 align="center" th:text="${round.hostName}"></h5><br>

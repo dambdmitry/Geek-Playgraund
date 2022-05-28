@@ -43,16 +43,12 @@ public class IndependentGamesProvider extends GameProvider {
             return getFailedResultOfGame(e);
         }
 
-        System.out.println(leftPlayerAction + " " + rightPlayerAction);
-
         try {
             checkIsAliveProcesses(); // проверим не сломались ли процессы игры
         } catch (GameProviderException e) {
-            //Чистка за собой
             System.out.println(e.getMessage());
             return getFailedResultOfGame(e);
         }
-
 
         //Цикл игры
         while (!hasWinAction(leftPlayerAction, rightPlayerAction)) {
@@ -77,19 +73,12 @@ public class IndependentGamesProvider extends GameProvider {
                 return getInvalidActionResult(leftPlayerAction, rightPlayerAction);
             }
 
-            System.out.println(leftPlayerAction + "---" + rightPlayerAction);
-
             if(isHanged(90)) {
                 System.out.println("зациклено");
                 return getFailedResultOfGame(new GameProviderException("Игра преодолела лимит по времени", "Игра"));
             }
         }
-
-
-        //Чистка за собой
         closeAndDeleteProcesses();
-
         return getFineGameResult();
     }
-
 }

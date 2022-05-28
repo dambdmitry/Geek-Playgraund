@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface VerificationService {
+
     VerificationResult doVerification(String language, String script, GameFactory.Game game);
+
     void savePlayerSolution(Long tournamentId, String playerName, String code, String language);
 
     default VerificationResult verificationAndSaveSolution(Solution solution) {
